@@ -13,7 +13,7 @@ public class AsteroidEditor: Editor {
         using (var check = new EditorGUI.ChangeCheckScope())
         {
             base.OnInspectorGUI();
-            if (check.changed)
+            if (check.changed && item.LiveReload)
             {
                 item.Generate();
             }
