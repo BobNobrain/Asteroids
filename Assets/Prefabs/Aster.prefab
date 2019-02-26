@@ -20,6 +20,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4063939240701056}
   - component: {fileID: 114756017024873786}
+  - component: {fileID: 135569107180834550}
+  - component: {fileID: 54768402060639830}
   m_Layer: 0
   m_Name: Aster
   m_TagString: Untagged
@@ -40,6 +42,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &54768402060639830
+Rigidbody:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1912228942853026}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0.001
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!114 &114756017024873786
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -51,7 +68,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30dabf8d4491d60488bbf166a73fa0da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resolution: 70
+  resolution: 25
   radius: 3
   material: {fileID: 2100000, guid: 9d9d74c3d5b907148af33cc31102dd0f, type: 2}
   meshFilters:
@@ -61,7 +78,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  LiveReload: 0
   seed: 0
+  rotationSpeed: 0.2
   ridgedSettings:
     strength: 0.1
     numLayers: 3
@@ -79,3 +98,15 @@ MonoBehaviour:
     persistence: 0.5
     centre: {x: 0, y: 0, z: 0}
     minValue: 0
+--- !u!135 &135569107180834550
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1912228942853026}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}

@@ -123,9 +123,10 @@ GameObject:
   - component: {fileID: 113335464}
   - component: {fileID: 113335463}
   - component: {fileID: 113335462}
+  - component: {fileID: 113335465}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -143,10 +144,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CamSpeed: 0.1
   VCamSpeedScale: 1
+  CamCircleSpeed: 0.05
   Eps: 0.001
-  MaxMovementSpeed: 5
-  MovementAccel: 0.5
-  StrafeAccel: 0.4
+  MaxMovementSpeed: 7
+  MovementAccel: 0.35
+  StrafeAccel: 0.25
 --- !u!54 &113335463
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -156,7 +158,7 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 1
   m_Drag: 0.1
-  m_AngularDrag: 1
+  m_AngularDrag: 10000
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -176,6 +178,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &113335465
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 113335461}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.6
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: -0.5, z: 0}
 --- !u!1 &159902000
 GameObject:
   m_ObjectHideFlags: 0

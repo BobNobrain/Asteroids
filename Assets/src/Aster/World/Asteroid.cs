@@ -6,6 +6,9 @@ namespace World {
 
 public class Asteroid: MonoBehaviour
 {
+    new private SphereCollider collider;
+    private Rigidbody body;
+
     [Range(2,256)]
     public int resolution = 10;
     public float radius = 2;
@@ -16,17 +19,21 @@ public class Asteroid: MonoBehaviour
     MeshFilter[] meshFilters = null;
     Face[] faces = null;
 
+    public bool LiveReload = false;
+
     public int seed = 0;
     public float rotationSpeed = 0.2f;
 
     public RidgidNoiseGenerator ridgedNoise;
     public SimplexNoiseGenerator simplexNoise;
 
-    public void FixedUpdate()
+    void Awake()
     {
-        Vector3 was = transform.rotation.eulerAngles;
-        was.z += rotationSpeed;
-        transform.rotation = Quaternion.Euler(was);
+        collider = GetComponent<SphereCollider>();
+        body = GetComponent<Rigidbody>();
+
+        // initial rotation
+        body.AddTorque(0, 0, rotationSpeed, ForceMode.VelocityChange);
     }
 
     public RidgidNoiseGenerator.Settings ridgedSettings = new RidgidNoiseGenerator.Settings {
@@ -82,14 +89,21 @@ public class Asteroid: MonoBehaviour
 
             faces[i] = new Face(this, meshFilters[i].sharedMesh, resolution, directions[i]);
         }
+
+        body.mass = radius * radius * Random.Range(.5f, 2f);
     }
 
     private void GenerateMesh()
     {
+        float minh = 1e5f, maxh = 0;
         foreach (var face in faces)
         {
-            face.ConstructMesh();
+            var next = face.ConstructMesh();
+            if (next.x < minh) minh = next.x;
+            if (next.y > maxh) maxh = next.y;
         }
+
+        collider.radius = minh + (maxh - minh) * .9f;
     }
 
     private float GetPointHeight(Vector3 unit)
@@ -124,12 +138,15 @@ public class Asteroid: MonoBehaviour
             axisB = Vector3.Cross(localUp, axisA);
         }
 
-        public void ConstructMesh()
+        public Vector2 ConstructMesh()
         {
             Vector3[] vertices = new Vector3[resolution * resolution];
             Vector2[] uvs = new Vector2[resolution * resolution];
             int[] triangles = new int[(resolution - 1) * (resolution - 1) * 6];
             int triIndex = 0;
+
+            float minHeight = 1e5f;
+            float maxHeight = 0;
 
             for (int y = 0; y < resolution; y++)
             {
@@ -139,7 +156,12 @@ public class Asteroid: MonoBehaviour
                     Vector2 percent = new Vector2(x, y) / (resolution - 1);
                     Vector3 pointOnUnitCube = localUp + (percent.x - .5f) * 2 * axisA + (percent.y - .5f) * 2 * axisB;
                     Vector3 pointOnUnitSphere = pointOnUnitCube.normalized;
-                    vertices[i] = pointOnUnitSphere * parent.GetPointHeight(pointOnUnitSphere);
+
+                    float pointHeight = parent.GetPointHeight(pointOnUnitSphere);
+                    if (pointHeight < minHeight) minHeight = pointHeight;
+                    if (pointHeight > maxHeight) maxHeight = pointHeight;
+
+                    vertices[i] = pointOnUnitSphere * pointHeight;
                     uvs[i] = new Vector2(x, y) / resolution;
 
                     if (x != resolution - 1 && y != resolution - 1)
@@ -161,7 +183,9 @@ public class Asteroid: MonoBehaviour
             mesh.uv = uvs;
             mesh.RecalculateNormals();
             mesh.RecalculateTangents();
-    }
+
+            return new Vector2(minHeight, maxHeight);
+        }
     }
 }
 
