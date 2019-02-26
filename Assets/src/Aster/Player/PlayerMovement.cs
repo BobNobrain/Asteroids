@@ -14,7 +14,12 @@ public class PlayerMovement: MonoBehaviour
 
     public float Eps = 1e-3f;
 
+    public float MaxMovementSpeed = 5f;
+    public float MovementAccel = .5f;
+    public float StrafeAccel = .4f;
+
     private float dMouseX, dMouseY;
+    private float dMoveForward, dMoveRightward;
 
     private Rigidbody body;
 
@@ -27,6 +32,9 @@ public class PlayerMovement: MonoBehaviour
     {
         dMouseX = Input.GetAxisRaw("Mouse X");
         dMouseY = Input.GetAxisRaw("Mouse Y");
+
+        dMoveForward = Input.GetAxisRaw("Vertical");
+        dMoveRightward = Input.GetAxisRaw("Horizontal");
     }
 
     void FixedUpdate()
@@ -35,7 +43,8 @@ public class PlayerMovement: MonoBehaviour
         UpdateMovement();
     }
 
-    private void UpdateCameraLook() {
+    private void UpdateCameraLook()
+    {
         var forward = transform.forward;
         var upward = transform.up;
         var rightward = transform.right;
@@ -49,19 +58,25 @@ public class PlayerMovement: MonoBehaviour
         if (Mathf.Abs(dMouseX) > Eps)
             newForward = Vector3.RotateTowards(newForward, rightward, CamSpeed * dMouseX, 0);
 
-        // var angles = Quaternion.LookRotation(forward, upward).eulerAngles;
-        // angles.y += dMouseX * HCamSpeed;
-        // angles.x -= dMouseY * VCamSpeed;
-
-        // if (angles.x > 360) angles.x -= 360;
-        // if (angles.x < 0) angles.x += 360;
-
-        // if (angles.y > 360) angles.y -= 360;
-        // if (angles.y < 0) angles.y += 360;
-
         transform.rotation = Quaternion.LookRotation(newForward, upward);
     }
-    private void UpdateMovement() {}
+    private void UpdateMovement()
+    {
+        var v = body.velocity;
+        var forward = transform.forward;
+        var rightward = transform.right;
+
+        var f = forward * dMoveForward * MovementAccel + rightward * dMoveRightward * StrafeAccel;
+        var a = f / body.mass;
+
+        v += a;
+        if (v.magnitude > MaxMovementSpeed)
+        {
+            v = v.normalized * MaxMovementSpeed;
+        }
+
+        body.velocity = v;
+    }
 }
 
 }}
