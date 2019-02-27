@@ -4,14 +4,17 @@ using Noise;
 namespace Aster {
 namespace World {
 
-public class Asteroid: MonoBehaviour
+public class Asteroid: MonoBehaviour, ILODController
 {
     new private SphereCollider collider;
     private Rigidbody body;
 
     [Range(2,256)]
     public int resolution = 10;
-    public float radius = 2;
+    public int maxResolution = 50;
+    public int minResolution = 5;
+    public float radius = 2f;
+    public float density = 1f;
 
     public Material material;
 
@@ -90,7 +93,7 @@ public class Asteroid: MonoBehaviour
             faces[i] = new Face(this, meshFilters[i].sharedMesh, resolution, directions[i]);
         }
 
-        body.mass = radius * radius * Random.Range(.5f, 2f);
+        body.mass = radius * radius * density;
     }
 
     private void GenerateMesh()
@@ -116,6 +119,12 @@ public class Asteroid: MonoBehaviour
     {
         Init();
         GenerateMesh();
+    }
+
+    public void SetLOD(float percent)
+    {
+        resolution = minResolution + (int) ((maxResolution - minResolution) * percent);
+        Generate();
     }
 
     private class Face

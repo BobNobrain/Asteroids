@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 895626e6b8e945a48b86c3c43cde43ae, type: 3}
+  m_Name: Regular
+  m_EditorClassIdentifier: 
+  availableTypes:
+  - type: {fileID: 11400000, guid: 1e67c30e7cc147949bdb8921e5068748, type: 2}
+    probability: 3
+  - type: {fileID: 11400000, guid: ad5f026ff22b74540befd9eebf36d577, type: 2}
+    probability: 2
+  - type: {fileID: 11400000, guid: d47bbaf8495e05b40a58ed0e722a2587, type: 2}
+    probability: 2
+  MinAsteroids: 30
+  MaxAsteroids: 50

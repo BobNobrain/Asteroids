@@ -50,7 +50,7 @@ Rigidbody:
   m_GameObject: {fileID: 1912228942853026}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0.001
+  m_Drag: 0.05
   m_AngularDrag: 0
   m_UseGravity: 0
   m_IsKinematic: 0
@@ -69,7 +69,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resolution: 25
+  maxResolution: 50
+  minResolution: 5
   radius: 3
+  density: 1
   material: {fileID: 2100000, guid: 9d9d74c3d5b907148af33cc31102dd0f, type: 2}
   meshFilters:
   - {fileID: 0}

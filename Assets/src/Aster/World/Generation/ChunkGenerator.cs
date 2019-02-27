@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using Aster.Utils;
 
 namespace Aster.World.Generation {
 
@@ -15,18 +14,27 @@ public class ChunkGenerator
         chunkSize = size;
     }
 
-    public void Generate(ChunkType type, Vector3 center)
+    public Chunk Generate(ChunkType type, Vector3 center, GameObject chunkPrefab)
     {
         int n = GetRandomAsteroidsCount(type);
         var b = new Bounds(center, chunkSize);
 
-        // TODO: create a new gameobject attached to root and add a chunk component on it
+        var chunkObj = GameObject.Instantiate(chunkPrefab, center, Quaternion.identity, root);
+        var chunk = chunkObj.GetComponent<Chunk>();
+        chunk.Init(chunkSize);
 
         for (int i = 0; i < n; i++)
         {
-            // TODO: use Bounds::RandomXY to place asteroids randomly in chunk space
-            // TODO: pick up a random asteroid type and use AsteroidGenerator to generate an asteroid at position
+            float x = b.PercentX(i, n);
+            Vector3 place = b.RandomYZ(x);
+
+            var asteroidType = Rnd.WeightedPick(type.availableTypes);
+
+            var asteroid = AsteroidGenerator.Generate(place, asteroidType, chunkObj);
+            chunk.AttachAsteroid(asteroid);
         }
+
+        return chunk;
     }
 
 

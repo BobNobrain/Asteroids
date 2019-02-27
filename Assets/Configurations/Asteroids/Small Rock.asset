@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a66dc6fd84eb6dc499401199f5279c36, type: 3}
+  m_Name: Small Rock
+  m_EditorClassIdentifier: 
+  asteroidPrefab: {fileID: 1912228942853026, guid: cfb1e02ba059bc1448eaaa757da99044,
+    type: 2}
+  MinRadius: 0.5
+  MaxRadius: 1.5
+  Materials:
+  - {fileID: 2100000, guid: 461e35e0242e7ed47a0d3a96f45fc585, type: 2}
+  - {fileID: 2100000, guid: 9d9d74c3d5b907148af33cc31102dd0f, type: 2}
+  Density: 3

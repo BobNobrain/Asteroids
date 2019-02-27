@@ -1,45 +1,30 @@
-﻿using Noise;
-using UnityEngine;
+﻿using UnityEngine;
+using Noise;
+using Aster.Utils;
 
-namespace Aster { namespace World {
+namespace Aster.World {
 
-public class AsteroidGenerator: MonoBehaviour
+public class AsteroidGenerator
 {
-    public GameObject asteroidPrefab;
-    public Material[] materials;
-    public int seed = 0;
-    [Range(1, 50)]
-    public int numAsteroids = 20;
-
-    public void Awake()
+    public static Asteroid Generate(Vector3 position, AsteroidType type, GameObject parentChunk)
     {
-        Random.InitState(seed);
+        var asteroidObj = GameObject.Instantiate(
+            type.asteroidPrefab,
+            position,
+            Random.rotation,
+            parentChunk.transform
+        );
 
-        float gap = 5f;
-        float boxSizeHalf = numAsteroids * gap / 2;
-        for (int i = 0; i < numAsteroids; i++)
-        {
-            float randomSize = Random.Range(0.5f, 2.5f);
-            Vector3 randomPosition = new Vector3(
-                Random.Range(-boxSizeHalf, boxSizeHalf),
-                Random.Range(-boxSizeHalf, boxSizeHalf),
-                -boxSizeHalf + i * gap
-            );
-            var next = Instantiate(asteroidPrefab, randomPosition, Random.rotation, transform);
-            var asteroid = next.GetComponent<Asteroid>();
-            asteroid.radius = randomSize;
-            asteroid.seed = seed + i;
-            asteroid.rotationSpeed = Random.Range(0.01f, 0.5f);
+        var asteroid = asteroidObj.GetComponent<Asteroid>();
 
-            int materialIndex = (int) (Random.value * materials.Length);
-            if (materialIndex == materials.Length)
-            {
-                materialIndex = 0;
-            }
-            asteroid.material = materials[materialIndex];
-            asteroid.Generate();
-        }
+        asteroid.radius = Random.Range(type.MinRadius, type.MaxRadius);
+        asteroid.material = Rnd.Pick(type.Materials);
+        asteroid.density = type.Density;
+        asteroid.seed = (int) Random.Range(0, 65535);
+        asteroid.rotationSpeed = Random.Range(0.01f, 0.5f);
+
+        return asteroid;
     }
 }
 
-}}
+}
