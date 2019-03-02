@@ -7,21 +7,24 @@ public class ChunkGenerator
 {
     private Transform root;
     private float chunkSize;
+    private MapGenerator g;
 
-    public ChunkGenerator(Transform root, float size)
+    public ChunkGenerator(MapGenerator generator, float size)
     {
-        this.root = root;
+        root = generator.transform;
         chunkSize = size;
+        g = generator;
     }
 
-    public Chunk Generate(ChunkType type, Vector3 center, GameObject chunkPrefab)
+    public Chunk Generate(ChunkType type, Vector3Int coords, GameObject chunkPrefab)
     {
+        Vector3 center = ((Vector3) coords) * chunkSize;
         int n = GetRandomAsteroidsCount(type);
         var b = new Bounds(center, chunkSize);
 
         var chunkObj = GameObject.Instantiate(chunkPrefab, center, Quaternion.identity, root);
         var chunk = chunkObj.GetComponent<Chunk>();
-        chunk.Init(chunkSize);
+        chunk.Init(chunkSize, g, coords);
 
         for (int i = 0; i < n; i++)
         {
