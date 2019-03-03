@@ -88,7 +88,7 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
 
     public float GetHeight(Vector3 unit)
     {
-        return (1 + ridgedNoise.Eval(unit) + simplexNoise.Eval(unit)) * this.radius;
+        return this.radius; // (1 + ridgedNoise.Eval(unit) + simplexNoise.Eval(unit)) * this.radius;
     }
 
     public void Generate()

@@ -1,11 +1,13 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using Aster.World.Generation;
 
 namespace Aster.World {
 
 [RequireComponent(typeof(BoxCollider))]
 public class Chunk: MonoBehaviour, ILODController {
-    private CompoundLODController asteroids;
+    private List<Asteroid> asteroids;
+    public float lod = 0f;
     private BoxCollider bounds;
 
     private MapGenerator root;
@@ -15,7 +17,7 @@ public class Chunk: MonoBehaviour, ILODController {
     public void Init(float chunkSize, MapGenerator generator, Vector3Int coords)
     {
         this.Coords = coords;
-        asteroids = new CompoundLODController();
+        asteroids = new List<Asteroid>();
         bounds = GetComponent<BoxCollider>();
         bounds.size = new Vector3(chunkSize, chunkSize, chunkSize);
         root = generator;
@@ -23,11 +25,12 @@ public class Chunk: MonoBehaviour, ILODController {
 
     public void AttachAsteroid(Asteroid a)
     {
-        asteroids.children.Add(a);
+        asteroids.Add(a);
     }
 
     public void SetLOD(float percent)
     {
+        lod = percent;
         if (Mathf.Approximately(percent, 0))
         {
             gameObject.SetActive(false);
@@ -35,7 +38,17 @@ public class Chunk: MonoBehaviour, ILODController {
         else
         {
             if (!gameObject.activeSelf) gameObject.SetActive(true);
-            asteroids.SetLOD(percent);
+
+            StartCoroutine(UpdateAsteroidLods());
+        }
+    }
+
+    private System.Collections.IEnumerator UpdateAsteroidLods()
+    {
+        foreach (var a in asteroids)
+        {
+            a.SetLOD(lod);
+            yield return null;
         }
     }
 
