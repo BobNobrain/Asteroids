@@ -69,8 +69,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resolution: 25
-  maxResolution: 3
-  minResolution: 2
+  maxResolution: 10
+  minResolution: 3
   lodTreshold: 0.2
   radius: 3
   density: 1
