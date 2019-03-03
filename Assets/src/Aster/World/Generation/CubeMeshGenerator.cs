@@ -16,6 +16,23 @@ public class CubeMeshGenerator
         float GetHeight(Vector3 onUnitSphere);
     }
 
+    private class MinMax
+    {
+        private float min = 1e10f;
+        private float max = 0;
+        public MinMax() {}
+
+        public void TestCandidate(float candidate)
+        {
+            if (candidate < min) min = candidate;
+            if (candidate > max) max = candidate;
+        }
+        public Vector2 ToVector2()
+        {
+            return new Vector2(min, max);
+        }
+    }
+
     private IHeightProvider provider;
 
     private int r;
@@ -30,14 +47,17 @@ public class CubeMeshGenerator
     private int[] ts = null;
     private int[] edges = null;
 
-    private int accVs = 0, accTs = 0, accEdges = 0;
+    private int accVs = 0, accTs = 0;
+
+    private MinMax minmax;
 
     public CubeMeshGenerator(IHeightProvider prov)
     {
         provider = prov;
+        minmax = new MinMax();
     }
 
-    public void GenerateCube(Mesh target, int r)
+    public Vector2 GenerateCube(Mesh target, int r)
     {
         this.r = r;
         fullFaceVertices = r * r;
@@ -54,8 +74,8 @@ public class CubeMeshGenerator
 
         edges = new int[r * 8];
 
-        Debug.Log("Total vertices: " + vs.Length);
-        Debug.Log("Total triangles: " + ts.Length);
+        // Debug.Log("Total vertices: " + vs.Length);
+        // Debug.Log("Total triangles: " + ts.Length);
 
         accVs = 0;
         accTs = 0;
@@ -77,6 +97,8 @@ public class CubeMeshGenerator
         target.RecalculateNormals();
         // target.RecalculateBounds();
         target.RecalculateTangents();
+
+        return minmax.ToVector2();
     }
 
     private void GenerateFullFace(float y)
@@ -100,7 +122,9 @@ public class CubeMeshGenerator
                     px = -px;
                 }
                 Vector3 point = new Vector3(px, y, pz).normalized;
-                vs[i] = point * provider.GetHeight(point);
+                float h = provider.GetHeight(point);
+                minmax.TestCandidate(h);
+                vs[i] = point * h;
                 uvs[i] = new Vector2(normx, normz);
 
                 // add triangles for Rect((x, y):(x+1, y+1)), except the last rows of x and y
@@ -193,7 +217,9 @@ public class CubeMeshGenerator
                 float px = normx - .5f;
                 float py = normy - .5f;
                 Vector3 point = (px * xAxis + py * yAxis + .5f * zAxis).normalized;
-                vs[i] = point * provider.GetHeight(point);
+                float ptHeight = provider.GetHeight(point);
+                minmax.TestCandidate(ptHeight);
+                vs[i] = point * ptHeight;
                 uvs[i] = new Vector2(normx, normy);
 
                 // add triangles for Rect((x, y):(x+1, y+1)), except the last rows of x and y
