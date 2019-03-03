@@ -12,6 +12,7 @@ public class CubeGeneratorTest : MonoBehaviour
 
     private MeshFilter filter;
     private Mesh mesh;
+    private CubeMeshGenerator g;
 
     public void Awake()
     {
@@ -19,12 +20,14 @@ public class CubeGeneratorTest : MonoBehaviour
         filter = GetComponent<MeshFilter>();
         mesh = new Mesh();
         filter.sharedMesh = mesh;
+
+        g = new CubeMeshGenerator();
         Generate();
     }
 
     public void Generate()
     {
-        CubeMeshGenerator.GenerateCube(mesh, resolution);
+        g.GenerateCube(mesh, resolution);
     }
 
     public void OnDrawGizmos()

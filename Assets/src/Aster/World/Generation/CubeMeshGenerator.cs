@@ -11,39 +11,52 @@ public class CubeMeshGenerator
         new Vector3(0, 0, -1)
     };
 
-    public static void GenerateCube(Mesh target, int r)
+    private int r;
+    private int fullFaceVertices;
+    private int fullFaceTriangles;
+    private int openFaceVertices;
+    private int openFaceTriangles;
+    private int glueTriangles;
+
+    private Vector3[] vs = null;
+    private Vector2[] uvs = null;
+    private int[] ts = null;
+
+    private int accVs = 0, accTs = 0;
+
+    public CubeMeshGenerator() {}
+
+    public void GenerateCube(Mesh target, int r)
     {
-        int fullFaceVertices = r * r;
-        int fullFaceTriangles = 3 * 2 * (r - 1) * (r - 1);
-        int openFaceVertices = (r - 1) * (r - 2);
-        int openFaceTriangles = 3 * 2 * (r - 2) * (r - 3);
-        int glueTriangles = 3 * (3 * r - 5);
+        this.r = r;
+        fullFaceVertices = r * r;
+        fullFaceTriangles = 3 * 2 * (r - 1) * (r - 1);
+        openFaceVertices = (r - 1) * (r - 2);
+        openFaceTriangles = 3 * 2 * (r - 2) * (r - 3);
+        glueTriangles = 3 * (3 * r - 5);
 
-        Vector3[] vs = new Vector3[2 * fullFaceVertices + 4 * openFaceVertices];
-        Vector2[] uvs = new Vector2[vs.Length];
-        int[] ts = new int[2 * fullFaceTriangles + 4 * (openFaceTriangles + glueTriangles)];
+        vs = new Vector3[2 * fullFaceVertices + 4 * openFaceVertices];
+        uvs = new Vector2[vs.Length];
+        ts = new int[2 * fullFaceTriangles + 4 * (openFaceTriangles + glueTriangles)];
 
-        int accVs = 0, accTs = 0;
+        accVs = 0;
+        accTs = 0;
 
-        GenerateFullFace(r, vs, accVs, ts, accTs, uvs, accVs, .5f);
-        accVs += fullFaceVertices;
-        accTs += fullFaceTriangles;
-        GenerateFullFace(r, vs, accVs, ts, accTs, uvs, accVs, -.5f);
-        accVs += fullFaceVertices;
-        accTs += fullFaceTriangles;
+        GenerateFullFace(.5f);
+        GenerateFullFace(-.5f);
 
         for (int i = 0; i < 4; i++)
         {
-            GenerateOpenFace(r, vs, accVs, ts, accTs, uvs, accVs, openFaceDirections[i]);
-            accVs += openFaceVertices;
-            accTs += openFaceTriangles;
+            GenerateOpenFace(openFaceDirections[i]);
+            // accVs += openFaceVertices;
+            // accTs += openFaceTriangles;
         }
 
-        for (int i = 0; i < 4; i++)
-        {
-            GlueOpenFace(ts, accTs, uvs, accVs, openFaceDirections[i]);
-            accTs += glueTriangles;
-        }
+        // for (int i = 0; i < 4; i++)
+        // {
+        //     GlueOpenFace(ts, accTs, uvs, accVs, openFaceDirections[i]);
+        //     accTs += glueTriangles;
+        // }
 
         target.Clear();
         target.vertices = vs;
@@ -54,16 +67,10 @@ public class CubeMeshGenerator
         target.RecalculateTangents();
     }
 
-    private static void GenerateFullFace(
-        int r,
-        Vector3[] vs, int vsOffset,
-        int[] ts, int tsOffset,
-        Vector2[] uvs, int uvsOffset,
-        float y
-    )
+    private void GenerateFullFace(float y)
     {
-        int i = vsOffset;
-        int trI = tsOffset;
+        int i = accVs;
+        int trI = accTs;
 
         float rMinus1 = r - 1f;
 
@@ -99,18 +106,17 @@ public class CubeMeshGenerator
                 ++i;
             }
         }
+
+        accVs += fullFaceVertices;
+        accTs += fullFaceTriangles;
     }
 
-    private static void GenerateOpenFace(
-        int r,
-        Vector3[] vs, int vsOffset,
-        int[] ts, int tsOffset,
-        Vector2[] uvs, int uvsOffset,
+    private void GenerateOpenFace(
         Vector3 zAxis
     )
     {
-        int i = vsOffset;
-        int trI = tsOffset;
+        int i = accVs;
+        int trI = accTs;
 
         float rMinus1 = r - 1f;
 
@@ -130,14 +136,13 @@ public class CubeMeshGenerator
                 float px = normx - .5f;
                 float py = normy - .5f;
                 Vector3 point = px * xAxis + py * yAxis + .5f * zAxis;
-                Debug.Log(point);
+                // Debug.Log(point);
                 vs[i] = point;
                 uvs[i] = new Vector2(normx, normy);
 
                 // add triangles for Rect((x, y):(x+1, y+1)), except the last rows of x and y
                 if (x < r - 2 && y < r - 2)
                 {
-                    Debug.Log("triangles");
                     ts[trI] = i;
                     ts[trI + 1] = i + 1;
                     ts[trI + 2] = i + h;
@@ -150,14 +155,19 @@ public class CubeMeshGenerator
                 ++i;
             }
         }
+
+        accVs += openFaceVertices;
+        accTs += openFaceTriangles;
     }
 
     private static void GlueOpenFace(
         int[] ts, int tsOffset,
         Vector2[] uvs, int uvsOffset,
-        Vector2 forward
+        Vector3 zAxis
     )
-    {}
+    {
+        // top
+    }
 }
 
 }
