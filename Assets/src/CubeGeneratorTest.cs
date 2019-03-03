@@ -26,4 +26,13 @@ public class CubeGeneratorTest : MonoBehaviour
     {
         CubeMeshGenerator.GenerateCube(mesh, resolution);
     }
+
+    public void OnDrawGizmos()
+    {
+        if (mesh == null) return;
+        foreach (var v in mesh.vertices)
+        {
+            Gizmos.DrawWireSphere(v, .01f);
+        }
+    }
 }
