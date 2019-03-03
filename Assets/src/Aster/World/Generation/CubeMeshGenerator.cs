@@ -17,13 +17,13 @@ public class CubeMeshGenerator
     private int openFaceVertices;
     private int openFaceTriangles;
     private int glueTriangles;
-    private int verticalGlueTriangles;
 
     private Vector3[] vs = null;
     private Vector2[] uvs = null;
     private int[] ts = null;
+    private int[] edges = null;
 
-    private int accVs = 0, accTs = 0;
+    private int accVs = 0, accTs = 0, accEdges = 0;
 
     public CubeMeshGenerator() {}
 
@@ -31,17 +31,18 @@ public class CubeMeshGenerator
     {
         this.r = r;
         fullFaceVertices = r * r;
-        fullFaceTriangles = 3 * 2 * (r - 1) * (r - 1);
+        fullFaceTriangles = 6 * (r - 1) * (r - 1);
 
         openFaceVertices = (r - 1) * (r - 2);
-        openFaceTriangles = 3 * 2 * (r - 2) * (r - 3);
+        openFaceTriangles = 6 * (r - 2) * (r - 3);
 
-        glueTriangles = 3 * (3 * r - 5);
-        verticalGlueTriangles = (r - 3) * 6;
+        glueTriangles = 6 * (3 * r - 5);
 
         vs = new Vector3[2 * fullFaceVertices + 4 * openFaceVertices];
         uvs = new Vector2[vs.Length];
         ts = new int[2 * fullFaceTriangles + 4 * (openFaceTriangles + glueTriangles)];
+
+        edges = new int[r * 8];
 
         Debug.Log("Total vertices: " + vs.Length);
         Debug.Log("Total triangles: " + ts.Length);
@@ -52,16 +53,12 @@ public class CubeMeshGenerator
         GenerateFullFace(.5f);
         GenerateFullFace(-.5f);
 
+        FillEdges();
+
         for (int i = 0; i < 4; i++)
         {
-            GenerateOpenFace(openFaceDirections[i]);
+            GenerateOpenFace(i, openFaceDirections[i]);
         }
-
-        // for (int i = 0; i < 4; i++)
-        // {
-        //     GlueOpenFace(ts, accTs, uvs, accVs, openFaceDirections[i]);
-        //     accTs += glueTriangles;
-        // }
 
         target.Clear();
         target.vertices = vs;
@@ -99,15 +96,16 @@ public class CubeMeshGenerator
                 // add triangles for Rect((x, y):(x+1, y+1)), except the last rows of x and y
                 if (x != r - 1 && z != r - 1)
                 {
-                    // ts[trI] = i;
-                    // ts[trI + 1] = i + r + 1;
-                    // ts[trI + 2] = i + r;
+                    ts[trI] = i;
+                    ts[trI + 1] = i + r + 1;
+                    ts[trI + 2] = i + r;
 
-                    // ts[trI + 3] = i;
-                    // ts[trI + 4] = i + 1;
-                    // ts[trI + 5] = i + r + 1;
-                    // trI += 6;
+                    ts[trI + 3] = i;
+                    ts[trI + 4] = i + 1;
+                    ts[trI + 5] = i + r + 1;
+                    trI += 6;
                 }
+
                 ++i;
             }
         }
@@ -116,9 +114,22 @@ public class CubeMeshGenerator
         accTs += fullFaceTriangles;
     }
 
-    private void GenerateOpenFace(
-        Vector3 zAxis
-    )
+    private void FillEdges()
+    {
+        int e = 0;
+        // top full face
+        for (int i = fullFaceVertices - r; i <= fullFaceVertices - 1; i++) { edges[e] = i; e++; }
+        for (int i = r; i > 0; i--) { edges[e] = i * r - 1; e++; }
+        for (int i = r - 1; i >= 0; i--) { edges[e] = i; e++; }
+        for (int i = 0; i < r; i++) { edges[e] = i * r; e++; }
+        // bottom full face
+        for (int i = 0; i < r; i++) { edges[e] = i + fullFaceVertices; e++; }
+        for (int i = 1; i <= r; i++) { edges[e] = i * r - 1 + fullFaceVertices; e++; }
+        for (int i = fullFaceVertices - 1; i >= fullFaceVertices - r; i--) { edges[e] = i + fullFaceVertices; e++; }
+        for (int i = r - 1; i >= 0; i--) { edges[e] = i * r + fullFaceVertices; e++; }
+    }
+
+    private void GenerateOpenFace(int faceIndex, Vector3 zAxis)
     {
         int i = accVs;
         int trI = accTs;
@@ -132,16 +143,38 @@ public class CubeMeshGenerator
         int nextOpenFaceIndex = (
             (
                 accVs + openFaceVertices - 2 * fullFaceVertices
-            ) % (
-                4 * (openFaceVertices)
-            )
+            ) % (4 * openFaceVertices)
         ) + 2 * fullFaceVertices;
 
-        Debug.Log(accVs);
-        Debug.Log(nextOpenFaceIndex);
+        int topGlueEdgeOffset = faceIndex * r;
+        int bottomGlueEdgeOffset = topGlueEdgeOffset + 4 * r;
 
         for (int x = 0; x < r - 1; x++)
         {
+            // horizontal bottom glue
+            if (x == r - 2)
+            {
+                // overlap to next open face
+
+                ts[trI] = edges[bottomGlueEdgeOffset + x];
+                ts[trI + 1] = i;
+                ts[trI + 2] = edges[bottomGlueEdgeOffset + x + 1];
+                ts[trI + 3] = edges[bottomGlueEdgeOffset + x + 1];
+                ts[trI + 4] = i;
+                ts[trI + 5] = nextOpenFaceIndex;
+                trI += 6;
+            }
+            else
+            {
+                ts[trI] = edges[bottomGlueEdgeOffset + x];
+                ts[trI + 1] = i;
+                ts[trI + 2] = i + h;
+                ts[trI + 3] = edges[bottomGlueEdgeOffset + x];
+                ts[trI + 4] = i + h;
+                ts[trI + 5] = edges[bottomGlueEdgeOffset + x + 1];
+                trI += 6;
+            }
+
             for (int y = 1; y < r - 1; y++)
             {
                 // next point on unit cube
@@ -182,19 +215,38 @@ public class CubeMeshGenerator
                 }
                 ++i;
             }
+
+            // horizontal glue
+            if (x == r - 2)
+            {
+                // overlap to next open face
+
+                // top glue
+                ts[trI] = edges[topGlueEdgeOffset + x];
+                ts[trI + 1] = edges[topGlueEdgeOffset + x + 1];
+                ts[trI + 2] = i - 1;
+                ts[trI + 3] = edges[topGlueEdgeOffset + x + 1];
+                ts[trI + 4] = nextOpenFaceIndex + h - 1;
+                ts[trI + 5] = i - 1;
+                trI += 6;
+
+                // bottom glue
+            }
+            else
+            {
+                // top glue
+                ts[trI] = edges[topGlueEdgeOffset + x];
+                ts[trI + 1] = i - 1 + h;
+                ts[trI + 2] = i - 1;
+                ts[trI + 3] = edges[topGlueEdgeOffset + x];
+                ts[trI + 4] = edges[topGlueEdgeOffset + x + 1];
+                ts[trI + 5] = i - 1 + h;
+                trI += 6;
+            }
         }
 
         accVs += openFaceVertices;
-        accTs += openFaceTriangles + verticalGlueTriangles;
-    }
-
-    private static void GlueOpenFace(
-        int[] ts, int tsOffset,
-        Vector2[] uvs, int uvsOffset,
-        Vector3 zAxis
-    )
-    {
-        // top
+        accTs += openFaceTriangles + glueTriangles;
     }
 }
 
