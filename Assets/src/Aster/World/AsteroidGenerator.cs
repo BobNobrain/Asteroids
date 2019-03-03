@@ -23,6 +23,8 @@ public class AsteroidGenerator
         asteroid.seed = (int) Random.Range(0, 65535);
         asteroid.rotationSpeed = Random.Range(0.01f, 0.5f);
 
+        asteroid.Init();
+
         return asteroid;
     }
 }

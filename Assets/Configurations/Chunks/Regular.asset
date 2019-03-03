@@ -18,5 +18,5 @@ MonoBehaviour:
     probability: 2
   - type: {fileID: 11400000, guid: d47bbaf8495e05b40a58ed0e722a2587, type: 2}
     probability: 2
-  MinAsteroids: 30
-  MaxAsteroids: 50
+  MinAsteroids: 10
+  MaxAsteroids: 25

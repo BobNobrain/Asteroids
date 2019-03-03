@@ -59,15 +59,19 @@ public class MapGenerator: MonoBehaviour
 
     private void ClearFarChunks()
     {
+        int totalDeleted = 0;
         for (int i = 0; i < activeChunks.Count; i++)
         {
             var chunk = activeChunks[i];
-            if (Diamond.IntegerDistance(chunk.Coords, center.Coords) > MaxViewDistance)
+            if (!IntCube.WithinCube(center.Coords, MaxViewDistance, chunk.Coords))
             {
                 activeChunks.RemoveAt(i);
+                chunk.Dispose();
                 --i;
+                ++totalDeleted;
             }
         }
+        Debug.Log("Removing far chunks: " + totalDeleted.ToString());
     }
     private void GenerateNewChunks(IntCube oldArea, IntCube newArea)
     {
@@ -77,14 +81,14 @@ public class MapGenerator: MonoBehaviour
             var chunk = GenerateChunk(coords);
             activeChunks.Add(chunk);
         }
+        Debug.Log("Generated new chunks: " + diff.Count);
     }
     private void UpdateLODs()
     {
         float mvd = (float) (MaxViewDistance + 1);
         foreach (var chunk in activeChunks)
         {
-            int d = Diamond.IntegerDistance(chunk.Coords, center.Coords);
-            Debug.Log("d(" + chunk.Coords.ToString() + ", " + center.Coords.ToString() + ") = " + d.ToString());
+            int d = Metrics.DiamondDistance(chunk.Coords, center.Coords);
             if (d > MaxViewDistance)
             {
                 chunk.SetLOD(0);
@@ -95,7 +99,6 @@ public class MapGenerator: MonoBehaviour
                 float lod = linearLod * linearLod;
                 if (lod > 1f) lod = 1f;
                 chunk.SetLOD(lod);
-                Debug.Log("Set LOD of " + lod.ToString() + " for chunk #" + chunk.Coords.ToString());
             }
         }
     }

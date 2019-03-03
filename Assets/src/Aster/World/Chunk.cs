@@ -49,6 +49,11 @@ public class Chunk: MonoBehaviour, ILODController {
         // TODO: save chunk state to disk
         Destroy(gameObject);
     }
+
+    public void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(transform.position, bounds.size);
+    }
 }
 
 }

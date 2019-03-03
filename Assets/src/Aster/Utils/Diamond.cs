@@ -16,7 +16,7 @@ public class Diamond
 
     public bool Within(Vector3Int point)
     {
-        return IntegerDistance(center, point) <= r;
+        return Metrics.DiamondDistance(center, point) <= r;
     }
 
     public int GetVolume()
@@ -24,14 +24,6 @@ public class Diamond
         int diamondCircumference = r * 4;
         int upperHalfSurface = 1 + 2 * r * (1 + r);
         return diamondCircumference + 2 * upperHalfSurface;
-    }
-
-    public static int IntegerDistance(Vector3Int a, Vector3Int b)
-    {
-        int dx = a.x - b.x;
-        int dy = a.y - b.y;
-        int dz = a.z - b.z;
-        return Math.Abs(dx) + Math.Abs(dy) + Math.Abs(dz);
     }
 }
 

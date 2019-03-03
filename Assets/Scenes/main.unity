@@ -276,7 +276,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   seed: 0
   chunkSize: 150
-  MaxViewDistance: 2
+  MaxViewDistance: 3
   chunkTypes:
   - {fileID: 11400000, guid: c935ef4f1f565714ba2165e454ddd23b, type: 2}
   chunkPrefab: {fileID: 1610898936521758, guid: b8273eb3f8f1f1048b13399bb846a327,

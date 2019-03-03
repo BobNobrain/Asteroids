@@ -13,6 +13,8 @@ public class Asteroid: MonoBehaviour, ILODController
     public int resolution = 10;
     public int maxResolution = 50;
     public int minResolution = 5;
+    public float lodTreshold = .2f;
+
     public float radius = 2f;
     public float density = 1f;
 
@@ -61,7 +63,7 @@ public class Asteroid: MonoBehaviour, ILODController
         minValue = 0
     };
 
-    private void Init()
+    public void Init()
     {
         ridgedNoise = new RidgidNoiseGenerator(ridgedSettings, seed);
         simplexNoise = new SimplexNoiseGenerator(simplexSettings, seed);
@@ -90,7 +92,7 @@ public class Asteroid: MonoBehaviour, ILODController
                 meshFilters[i].sharedMesh = new Mesh();
             }
 
-            faces[i] = new Face(this, meshFilters[i].sharedMesh, resolution, directions[i]);
+            faces[i] = new Face(this, meshFilters[i].sharedMesh, directions[i]);
         }
 
         body.mass = radius * radius * density;
@@ -101,7 +103,7 @@ public class Asteroid: MonoBehaviour, ILODController
         float minh = 1e5f, maxh = 0;
         foreach (var face in faces)
         {
-            var next = face.ConstructMesh();
+            var next = face.ConstructMesh(resolution);
             if (next.x < minh) minh = next.x;
             if (next.y > maxh) maxh = next.y;
         }
@@ -117,37 +119,43 @@ public class Asteroid: MonoBehaviour, ILODController
 
     public void Generate()
     {
-        Init();
+        // Init();
         GenerateMesh();
     }
 
     public void SetLOD(float percent)
     {
-        resolution = minResolution + (int) ((maxResolution - minResolution) * percent);
+        if (percent < lodTreshold)
+        {
+            resolution = minResolution;
+        }
+        else
+        {
+            percent = (percent - lodTreshold) / (1 - lodTreshold);
+            resolution = minResolution + (int) ((maxResolution - minResolution) * percent);
+        }
         Generate();
     }
 
     private class Face
     {
         Mesh mesh;
-        int resolution;
         Vector3 localUp;
         Vector3 axisA;
         Vector3 axisB;
         Asteroid parent;
 
-        public Face(Asteroid parent, Mesh mesh, int resolution, Vector3 localUp)
+        public Face(Asteroid parent, Mesh mesh, Vector3 localUp)
         {
             this.parent = parent;
             this.mesh = mesh;
-            this.resolution = resolution;
             this.localUp = localUp;
 
             axisA = new Vector3(localUp.y, localUp.z, localUp.x);
             axisB = Vector3.Cross(localUp, axisA);
         }
 
-        public Vector2 ConstructMesh()
+        public Vector2 ConstructMesh(int resolution)
         {
             Vector3[] vertices = new Vector3[resolution * resolution];
             Vector2[] uvs = new Vector2[resolution * resolution];

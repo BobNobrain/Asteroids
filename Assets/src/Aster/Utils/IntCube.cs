@@ -21,7 +21,7 @@ public class IntCube
         return side * side * side;
     }
 
-    private static bool Within(int r, Vector3Int point)
+    private static bool withinZeroCube(int r, Vector3Int point)
     {
         return Math.Abs(point.x) <= r && Math.Abs(point.y) <= r && Math.Abs(point.z) <= r;
     }
@@ -29,24 +29,38 @@ public class IntCube
     public List<Vector3Int> Diff(IntCube wiping)
     {
         var result = new List<Vector3Int>();
+
+        // shifting coords so that this cube center is (0, 0, 0)
         var wcShifted  = wiping.center - center;
 
+        // put these in stack to quicker access
+        var wpR = wiping.radius;
+        int cx = center.x, cy = center.y, cz = center.z;
+        int wcx = wcShifted.x, wcy = wcShifted.y, wcz = wcShifted.z;
+
+        // x, y and z are shifted coords
         for (int x = -radius; x <= radius; x++)
         {
             for (int y = -radius; y <= radius; y++)
             {
                 for (int z = -radius; z <= radius; z++)
                 {
-                    var point = new Vector3Int(x, y, z);
-                    if (!Within(wiping.radius, point - wcShifted))
+                    bool belongsToWiping = Math.Abs(x - wcx) <= wpR && Math.Abs(y - wcy) <= wpR && Math.Abs(z - wcz) <= wpR;
+                    if (!belongsToWiping)
                     {
-                        result.Add(point);
+                        // point is not in wiping, so save it
+                        result.Add(new Vector3Int(x + cx, y + cy, z + cz));
                     }
                 }
             }
         }
 
         return result;
+    }
+
+    public static bool WithinCube(Vector3Int cubeCenter, int cubeR, Vector3Int point)
+    {
+        return withinZeroCube(cubeR, point - cubeCenter);
     }
 }
 
