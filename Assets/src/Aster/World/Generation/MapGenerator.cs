@@ -9,8 +9,10 @@ public class MapGenerator: MonoBehaviour
     public int seed = 0;
     public float chunkSize = 70f;
 
-    [Range(1, 10)]
+    [Range(1, 15)]
     public int MaxViewDistance = 3;
+    [Range(1, 10)]
+    public int MinViewDistance = 1;
 
     public ChunkType[] chunkTypes;
 
@@ -85,13 +87,17 @@ public class MapGenerator: MonoBehaviour
     }
     private void UpdateLODs()
     {
-        float mvd = (float) (MaxViewDistance + 1);
+        float mvd = (float) (MaxViewDistance - MinViewDistance + 1);
         foreach (var chunk in activeChunks)
         {
             int d = Metrics.DiamondDistance(chunk.Coords, center.Coords);
             if (d > MaxViewDistance)
             {
-                chunk.SetLOD(0);
+                chunk.SetLOD(0f);
+            }
+            else if (d <= MinViewDistance)
+            {
+                chunk.SetLOD(1f);
             }
             else
             {

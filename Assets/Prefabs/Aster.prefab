@@ -112,9 +112,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resolution: 25
-  maxResolution: 10
+  maxResolution: 25
   minResolution: 3
-  lodTreshold: 0.2
+  lodTreshold: 0.15
   radius: 3
   density: 1
   material: {fileID: 2100000, guid: 9d9d74c3d5b907148af33cc31102dd0f, type: 2}
