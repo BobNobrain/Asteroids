@@ -11,6 +11,13 @@ public class CubeMeshGenerator
         new Vector3(0, 0, -1)
     };
 
+    public interface IHeightProvider
+    {
+        float GetHeight(Vector3 onUnitSphere);
+    }
+
+    private IHeightProvider provider;
+
     private int r;
     private int fullFaceVertices;
     private int fullFaceTriangles;
@@ -25,7 +32,10 @@ public class CubeMeshGenerator
 
     private int accVs = 0, accTs = 0, accEdges = 0;
 
-    public CubeMeshGenerator() {}
+    public CubeMeshGenerator(IHeightProvider prov)
+    {
+        provider = prov;
+    }
 
     public void GenerateCube(Mesh target, int r)
     {
@@ -89,8 +99,8 @@ public class CubeMeshGenerator
                 {
                     px = -px;
                 }
-                Vector3 point = new Vector3(px, y, pz);
-                vs[i] = point;
+                Vector3 point = new Vector3(px, y, pz).normalized;
+                vs[i] = point * provider.GetHeight(point);
                 uvs[i] = new Vector2(normx, normz);
 
                 // add triangles for Rect((x, y):(x+1, y+1)), except the last rows of x and y
@@ -182,8 +192,8 @@ public class CubeMeshGenerator
 
                 float px = normx - .5f;
                 float py = normy - .5f;
-                Vector3 point = px * xAxis + py * yAxis + .5f * zAxis;
-                vs[i] = point;
+                Vector3 point = (px * xAxis + py * yAxis + .5f * zAxis).normalized;
+                vs[i] = point * provider.GetHeight(point);
                 uvs[i] = new Vector2(normx, normy);
 
                 // add triangles for Rect((x, y):(x+1, y+1)), except the last rows of x and y

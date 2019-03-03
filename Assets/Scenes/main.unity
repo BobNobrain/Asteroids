@@ -276,7 +276,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d73eb69b16bd05468bf94402bf1c0ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resolution: 5
+  resolution: 20
   material: {fileID: 2100000, guid: 780a9acf5c83b8f4f941a3e5e3d0fa2f, type: 2}
 --- !u!23 &162717336
 MeshRenderer:

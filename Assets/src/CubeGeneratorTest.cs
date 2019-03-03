@@ -3,7 +3,7 @@ using Aster.World.Generation;
 
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MeshFilter))]
-public class CubeGeneratorTest : MonoBehaviour
+public class CubeGeneratorTest: MonoBehaviour, CubeMeshGenerator.IHeightProvider
 {
     [Range(2, 50)]
     public int resolution = 3;
@@ -14,6 +14,11 @@ public class CubeGeneratorTest : MonoBehaviour
     private Mesh mesh;
     private CubeMeshGenerator g;
 
+    public float GetHeight(Vector3 onUnitSphere)
+    {
+        return 1f;
+    }
+
     public void Awake()
     {
         GetComponent<MeshRenderer>().sharedMaterial = material;
@@ -21,7 +26,7 @@ public class CubeGeneratorTest : MonoBehaviour
         mesh = new Mesh();
         filter.sharedMesh = mesh;
 
-        g = new CubeMeshGenerator();
+        g = new CubeMeshGenerator(this);
         Generate();
     }
 
