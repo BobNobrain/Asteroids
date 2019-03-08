@@ -23,7 +23,7 @@ public class MapGenerator: MonoBehaviour
     private Chunk center;
     private List<Chunk> activeChunks;
 
-    void Awake()
+    void Start()
     {
         Random.InitState(seed);
         generator = new ChunkGenerator(this, chunkSize);
@@ -31,6 +31,11 @@ public class MapGenerator: MonoBehaviour
         int cubeSide = MaxViewDistance * 2 + 1;
         activeChunks = new List<Chunk>(cubeSide * cubeSide * cubeSide);
 
+        GenerateZeroNeighborhood();
+    }
+
+    public void GenerateZeroNeighborhood()
+    {
         var zero = GenerateChunk(new Vector3Int(0, 0, 0));
         activeChunks.Add(zero);
 
