@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityToolbag;
 using Aster.World.Generation;
 
 [RequireComponent(typeof(MeshRenderer))]
@@ -16,7 +17,7 @@ public class CubeGeneratorTest: MonoBehaviour, CubeMeshGenerator.IHeightProvider
 
     public float GetHeight(Vector3 onUnitSphere)
     {
-        return 1f;
+        return 2f;
     }
 
     public void Awake()
@@ -32,7 +33,22 @@ public class CubeGeneratorTest: MonoBehaviour, CubeMeshGenerator.IHeightProvider
 
     public void Generate()
     {
-        g.GenerateCube(mesh, resolution);
+        var promise = new Future<CubeMeshGenerator.CubeData>();
+
+        promise.OnSuccess(cubeDataFuture => {
+            var cubeData = cubeDataFuture.value;
+
+            mesh.Clear();
+            mesh.vertices = cubeData.vertices;
+            mesh.triangles = cubeData.triangles;
+            mesh.uv = cubeData.uvs;
+
+            mesh.RecalculateNormals();
+            // mesh.RecalculateBounds();
+            mesh.RecalculateTangents();
+        });
+
+        promise.Process(() => g.GenerateCube(resolution));
     }
 
     public void OnDrawGizmos()

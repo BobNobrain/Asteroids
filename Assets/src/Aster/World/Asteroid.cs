@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Noise;
+using UnityToolbag;
 using Aster.World.Generation;
 
 namespace Aster.World {
@@ -78,22 +79,52 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
         body.mass = radius * radius * density;
     }
 
-    private void GenerateMesh()
+    private void GenerateMeshInBackground()
     {
-        Vector2 minmax = meshGenerator.GenerateCube(mesh, resolution);
-        float minh = minmax.x, maxh = minmax.y;
+        var promise = new Future<CubeMeshGenerator.CubeData>();
 
-        collider.radius = minh + (maxh - minh) * .9f;
+        promise.OnSuccess(cubeDataFuture => {
+            var cubeData = cubeDataFuture.value;
+
+            float minh = cubeData.minmax.x, maxh = cubeData.minmax.y;
+            collider.radius = minh + (maxh - minh) * .9f;
+
+            mesh.Clear();
+            mesh.vertices = cubeData.vertices;
+            mesh.triangles = cubeData.triangles;
+            mesh.uv = cubeData.uvs;
+
+            mesh.RecalculateNormals();
+            mesh.RecalculateTangents();
+        });
+
+        promise.Process(() => meshGenerator.GenerateCube(resolution));
     }
 
     public float GetHeight(Vector3 unit)
     {
-        return this.radius; // (1 + ridgedNoise.Eval(unit) + simplexNoise.Eval(unit)) * this.radius;
+        return (1 + ridgedNoise.Eval(unit) + simplexNoise.Eval(unit)) * this.radius;
     }
 
     public void Generate()
     {
-        GenerateMesh();
+        var cubeData = meshGenerator.GenerateCube(resolution);
+
+        float minh = cubeData.minmax.x, maxh = cubeData.minmax.y;
+
+        Dispatcher.InvokeAsync(() => {
+            if (this == null) return;
+
+            collider.radius = minh + (maxh - minh) * .9f;
+
+            mesh.Clear();
+            mesh.vertices = cubeData.vertices;
+            mesh.triangles = cubeData.triangles;
+            mesh.uv = cubeData.uvs;
+
+            mesh.RecalculateNormals();
+            mesh.RecalculateTangents();
+        });
     }
 
     public void SetLOD(float percent)

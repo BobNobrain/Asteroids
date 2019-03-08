@@ -4,6 +4,16 @@ namespace Aster.World.Generation {
 
 public class CubeMeshGenerator
 {
+    public class CubeData
+    {
+        public Vector3[] vertices = null;
+        public Vector2[] uvs = null;
+        public int[] triangles = null;
+        public Vector2 minmax;
+        public CubeData()
+        {}
+    }
+
     private static readonly Vector3[] openFaceDirections = new Vector3[] {
         new Vector3(+1, 0, 0),
         new Vector3(0, 0, +1),
@@ -57,7 +67,7 @@ public class CubeMeshGenerator
         minmax = new MinMax();
     }
 
-    public Vector2 GenerateCube(Mesh target, int r)
+    public CubeData GenerateCube(int r)
     {
         this.r = r;
         fullFaceVertices = r * r;
@@ -74,9 +84,6 @@ public class CubeMeshGenerator
 
         edges = new int[r * 8];
 
-        // Debug.Log("Total vertices: " + vs.Length);
-        // Debug.Log("Total triangles: " + ts.Length);
-
         accVs = 0;
         accTs = 0;
 
@@ -90,15 +97,21 @@ public class CubeMeshGenerator
             GenerateOpenFace(i, openFaceDirections[i]);
         }
 
-        target.Clear();
-        target.vertices = vs;
-        target.triangles = ts;
-        target.uv = uvs;
-        target.RecalculateNormals();
-        // target.RecalculateBounds();
-        target.RecalculateTangents();
+        // target.Clear();
+        // target.vertices = vs;
+        // target.triangles = ts;
+        // target.uv = uvs;
+        // target.RecalculateNormals();
+        // // target.RecalculateBounds();
+        // target.RecalculateTangents();
 
-        return minmax.ToVector2();
+        var result = new CubeData();
+        result.vertices = vs;
+        result.triangles = ts;
+        result.uvs = uvs;
+        result.minmax = minmax.ToVector2();
+
+        return result;
     }
 
     private void GenerateFullFace(float y)

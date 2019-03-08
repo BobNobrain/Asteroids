@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityToolbag;
 using Aster.Utils;
 
 namespace Aster.World.Generation {
@@ -91,21 +92,27 @@ public class MapGenerator: MonoBehaviour
         foreach (var chunk in activeChunks)
         {
             int d = Metrics.DiamondDistance(chunk.Coords, center.Coords);
+            float lod;
             if (d > MaxViewDistance)
             {
-                chunk.SetLOD(0f);
+                lod = 0f;
             }
             else if (d <= MinViewDistance)
             {
-                chunk.SetLOD(1f);
+                lod = 1f;
             }
             else
             {
                 float linearLod = (MaxViewDistance + 1 - d) / mvd;
-                float lod = linearLod * linearLod;
+                lod = linearLod * linearLod;
                 if (lod > 1f) lod = 1f;
-                chunk.SetLOD(lod);
             }
+
+            new Future<Object>().Process(() => {
+                chunk.SetLOD(lod);
+                return null;
+            });
+            // chunk.SetLOD(lod);
         }
     }
 }

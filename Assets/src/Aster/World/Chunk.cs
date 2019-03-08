@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityToolbag;
 using Aster.World.Generation;
 
 namespace Aster.World {
@@ -31,15 +32,19 @@ public class Chunk: MonoBehaviour, ILODController {
     public void SetLOD(float percent)
     {
         lod = percent;
-        if (Mathf.Approximately(percent, 0))
-        {
-            gameObject.SetActive(false);
-        }
-        else
-        {
-            if (!gameObject.activeSelf) gameObject.SetActive(true);
+        // if (Mathf.Approximately(percent, 0))
+        // {
+        //     gameObject.SetActive(false);
+        // }
+        // else
+        // {
+        //     if (!gameObject.activeSelf) gameObject.SetActive(true);
 
-            StartCoroutine(UpdateAsteroidLods());
+        //     StartCoroutine(UpdateAsteroidLods());
+        // }
+        foreach (var a in asteroids)
+        {
+            a.SetLOD(lod);
         }
     }
 
@@ -50,6 +55,7 @@ public class Chunk: MonoBehaviour, ILODController {
             a.SetLOD(lod);
             yield return null;
         }
+        // yield return null;
     }
 
     public void OnPlayerEnter()
@@ -60,7 +66,7 @@ public class Chunk: MonoBehaviour, ILODController {
     public void Dispose()
     {
         // TODO: save chunk state to disk
-        Destroy(gameObject);
+        Dispatcher.InvokeAsync(() => Destroy(gameObject));
     }
 
     public void OnDrawGizmos()
