@@ -55,6 +55,7 @@ public class MapGenerator: MonoBehaviour
 
     public void UpdateCenter(Chunk newCenter)
     {
+        if (center == newCenter) return;
         var oldCenter = center;
         center = newCenter;
         ClearFarChunks();

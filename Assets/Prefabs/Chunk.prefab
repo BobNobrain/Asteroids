@@ -64,3 +64,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85fda137d91d5a9448e398b8c49f57bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lod: 0
+  Coords: {x: 0, y: 0, z: 0}
+  guestsLayerMask: 8

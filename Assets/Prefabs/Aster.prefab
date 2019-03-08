@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 54768402060639830}
   - component: {fileID: 33564949022786074}
   - component: {fileID: 23138348402241612}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Aster
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,7 +93,7 @@ Rigidbody:
   m_GameObject: {fileID: 1912228942853026}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0.05
+  m_Drag: 0.1
   m_AngularDrag: 0
   m_UseGravity: 0
   m_IsKinematic: 0
@@ -111,10 +111,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30dabf8d4491d60488bbf166a73fa0da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  region: {fileID: 0}
   resolution: 25
   maxResolution: 20
-  minResolution: 3
-  lodTreshold: 0.2
+  minResolution: 4
+  middleResolution: 8
+  lodLowTreshold: 0.2
+  lodHighTreshold: 0.9
   radius: 3
   density: 1
   material: {fileID: 2100000, guid: 9d9d74c3d5b907148af33cc31102dd0f, type: 2}

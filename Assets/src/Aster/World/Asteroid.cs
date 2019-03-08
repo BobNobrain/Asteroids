@@ -13,7 +13,7 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
     private Mesh mesh;
     private CubeMeshGenerator meshGenerator;
 
-    public Chunk region;
+    [HideInInspector] public Chunk region;
 
     private bool colliderEnabled;
 
@@ -90,49 +90,31 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
     #endregion
 
     #region Generation
-    private void GenerateMeshInBackground()
+    public void Generate(bool regenerateMesh)
     {
-        var promise = new Future<CubeMeshGenerator.CubeData>();
-
-        promise.OnSuccess(cubeDataFuture => {
-            var cubeData = cubeDataFuture.value;
-
-            float minh = cubeData.minmax.x, maxh = cubeData.minmax.y;
-            collider.radius = minh + (maxh - minh) * .9f;
-
-            mesh.Clear();
-            mesh.vertices = cubeData.vertices;
-            mesh.triangles = cubeData.triangles;
-            mesh.uv = cubeData.uvs;
-
-            mesh.RecalculateNormals();
-            mesh.RecalculateTangents();
-        });
-
-        promise.Process(() => meshGenerator.GenerateCube(resolution));
-    }
-
-    public void Generate()
-    {
-        var cubeData = meshGenerator.GenerateCube(resolution);
-        float minh = cubeData.minmax.x, maxh = cubeData.minmax.y;
+        var cubeData = regenerateMesh ? meshGenerator.GenerateCube(resolution) : null;
 
         Dispatcher.InvokeAsync(() => {
             if (this == null) return;
 
-            if (colliderEnabled != collider.enabled) collider.enabled = colliderEnabled;
-            if (colliderEnabled)
+            if (colliderEnabled == collider.isTrigger) collider.isTrigger = !colliderEnabled;
+
+            if (cubeData != null)
             {
-                collider.radius = minh + (maxh - minh) * .9f;
+                if (colliderEnabled)
+                {
+                    float minh = cubeData.minmax.x, maxh = cubeData.minmax.y;
+                    collider.radius = minh + (maxh - minh) * .9f;
+                }
+
+                mesh.Clear();
+                mesh.vertices = cubeData.vertices;
+                mesh.triangles = cubeData.triangles;
+                mesh.uv = cubeData.uvs;
+
+                mesh.RecalculateNormals();
+                mesh.RecalculateTangents();
             }
-
-            mesh.Clear();
-            mesh.vertices = cubeData.vertices;
-            mesh.triangles = cubeData.triangles;
-            mesh.uv = cubeData.uvs;
-
-            mesh.RecalculateNormals();
-            mesh.RecalculateTangents();
         });
     }
     #endregion
@@ -144,18 +126,27 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
 
     public void SetLOD(float percent)
     {
-        if (percent > lodHighTreshold)
-            resolution = maxResolution;
-        else if (percent < lodLowTreshold)
-            resolution = minResolution;
-        else
-            resolution = middleResolution;
+        int newResolution;
 
+        if (percent > lodHighTreshold)
+            newResolution = maxResolution;
+        else if (percent < lodLowTreshold)
+            newResolution = minResolution;
+        else
+            newResolution = middleResolution;
+
+        bool regenerateMesh = resolution != newResolution;
+        resolution = newResolution;
         // only for current chunk and maybe its neighbours, depends on MapGenerator::MinViewDistance
         colliderEnabled = Mathf.Approximately(percent, 1f);
 
-        Generate();
+        Generate(regenerateMesh);
     }
+
+    // public void OnDrawGizmosSelected()
+    // {
+    //     Gizmos.DrawWireCube(region.transform.position, region.bounds.size);
+    // }
 }
 
 }

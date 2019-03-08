@@ -15,6 +15,8 @@ public class Chunk: MonoBehaviour, ILODController {
 
     public Vector3Int Coords;
 
+    public int guestsLayerMask = 8; // "Chunk Guests"
+
     public void Init(float chunkSize, MapGenerator generator, Vector3Int coords)
     {
         this.Coords = coords;
@@ -44,16 +46,37 @@ public class Chunk: MonoBehaviour, ILODController {
         }
     }
 
+    #region ChunkGuests
     public void OnPlayerEnter()
     {
         root.UpdateCenter(this);
     }
     public void OnAsteroidEnter(Asteroid entered)
     {
+        if (entered.region == this) return;
+
         entered.region.DetachAsteroid(entered);
         AttachAsteroid(entered);
         entered.SetLOD(lod);
     }
+
+    void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Collision with " + other.gameObject.name + ": " + other.gameObject.layer);
+        if (other.gameObject.layer  == guestsLayerMask)
+        {
+            var asteroid = other.gameObject.GetComponent<Asteroid>();
+            if (asteroid != null)
+            {
+                OnAsteroidEnter(asteroid);
+            }
+            else
+            {
+                OnPlayerEnter();
+            }
+        }
+    }
+    #endregion
 
     public void Dispose()
     {
