@@ -23,6 +23,8 @@ public class MapGenerator: MonoBehaviour
     private Chunk center;
     private List<Chunk> activeChunks;
 
+    public ParticleSystem asteroidSplashEffect;
+
     void Start()
     {
         Random.InitState(seed);

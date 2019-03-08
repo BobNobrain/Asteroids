@@ -34,6 +34,8 @@ public class ChunkGenerator
             var asteroidType = Rnd.WeightedPick(type.availableTypes);
 
             var asteroid = AsteroidGenerator.Generate(place, asteroidType, chunkObj);
+            // TODO: refactor!
+            asteroid.splashEffect = g.asteroidSplashEffect;
             chunk.AttachAsteroid(asteroid);
         }
 

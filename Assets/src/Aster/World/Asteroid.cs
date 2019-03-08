@@ -30,6 +30,9 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
 
     public Material material;
 
+    [HideInInspector] public ParticleSystem splashEffect;
+    public int ParticlesToEmit = 100;
+
     public bool LiveReload = false;
 
     public int seed = 0;
@@ -142,6 +145,22 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
 
         Generate(regenerateMesh);
     }
+
+    #region Effects
+    void OnCollisionEnter(Collision c)
+    {
+        if (splashEffect == null) return;
+
+        if (c.relativeVelocity.magnitude > .01f)
+        {
+            foreach (ContactPoint contact in c.contacts)
+            {
+                splashEffect.transform.position = contact.point;
+                splashEffect.Emit(ParticlesToEmit);
+            }
+        }
+    }
+    #endregion
 
     // public void OnDrawGizmosSelected()
     // {
