@@ -69,10 +69,10 @@ public class Chunk: MonoBehaviour, ILODController {
         Dispatcher.InvokeAsync(() => Destroy(gameObject));
     }
 
-    public void OnDrawGizmos()
-    {
-        Gizmos.DrawWireCube(transform.position, bounds.size);
-    }
+    // public void OnDrawGizmos()
+    // {
+    //     Gizmos.DrawWireCube(transform.position, bounds.size);
+    // }
 }
 
 }

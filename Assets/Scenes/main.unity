@@ -360,8 +360,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seed: 0
-  chunkSize: 150
-  MaxViewDistance: 3
+  chunkSize: 60
+  MaxViewDistance: 4
   MinViewDistance: 2
   chunkTypes:
   - {fileID: 11400000, guid: c935ef4f1f565714ba2165e454ddd23b, type: 2}

@@ -13,6 +13,8 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
     private Mesh mesh;
     private CubeMeshGenerator meshGenerator;
 
+    private bool colliderEnabled;
+
     [Range(3,100)]
     public int resolution = 10;
     public int maxResolution = 50;
@@ -115,7 +117,11 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
         Dispatcher.InvokeAsync(() => {
             if (this == null) return;
 
-            collider.radius = minh + (maxh - minh) * .9f;
+            if (colliderEnabled != collider.enabled) collider.enabled = colliderEnabled;
+            if (colliderEnabled)
+            {
+                collider.radius = minh + (maxh - minh) * .9f;
+            }
 
             mesh.Clear();
             mesh.vertices = cubeData.vertices;
@@ -138,6 +144,8 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
             percent = (percent - lodTreshold) / (1 - lodTreshold);
             resolution = minResolution + (int) ((maxResolution - minResolution) * percent);
         }
+
+        colliderEnabled = Mathf.Approximately(percent, 1f);
         Generate();
     }
 }
