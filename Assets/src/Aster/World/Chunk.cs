@@ -27,40 +27,32 @@ public class Chunk: MonoBehaviour, ILODController {
     public void AttachAsteroid(Asteroid a)
     {
         asteroids.Add(a);
+        a.region = this;
+    }
+    public void DetachAsteroid(Asteroid a)
+    {
+        asteroids.Remove(a);
+        a.region = null;
     }
 
     public void SetLOD(float percent)
     {
         lod = percent;
-        // if (Mathf.Approximately(percent, 0))
-        // {
-        //     gameObject.SetActive(false);
-        // }
-        // else
-        // {
-        //     if (!gameObject.activeSelf) gameObject.SetActive(true);
-
-        //     StartCoroutine(UpdateAsteroidLods());
-        // }
         foreach (var a in asteroids)
         {
-            a.SetLOD(lod);
+            a.SetLOD(percent);
         }
-    }
-
-    private System.Collections.IEnumerator UpdateAsteroidLods()
-    {
-        foreach (var a in asteroids)
-        {
-            a.SetLOD(lod);
-            yield return null;
-        }
-        // yield return null;
     }
 
     public void OnPlayerEnter()
     {
         root.UpdateCenter(this);
+    }
+    public void OnAsteroidEnter(Asteroid entered)
+    {
+        entered.region.DetachAsteroid(entered);
+        AttachAsteroid(entered);
+        entered.SetLOD(lod);
     }
 
     public void Dispose()
