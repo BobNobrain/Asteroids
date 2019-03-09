@@ -8,7 +8,7 @@ public class PlayerStats: MonoBehaviour
 {
     public Bar Health;
     public Bar Oxygen;
-    public Bar Stamina;
+    public CooldownBar Stamina;
 
     [SerializeField]
     private float StaminaRegenerationSpeed = .5f;
@@ -25,7 +25,7 @@ public class PlayerStats: MonoBehaviour
         // Breathe
         if (!Oxygen.Acquire(dt * BreathSpeed))
         {
-            var dead = Health.Acquire(dt * AsphyxiaDamage);
+            var dead = !Health.Acquire(dt * AsphyxiaDamage);
             if (dead)
             {
                 Debug.Log("YOU DIED");
@@ -41,34 +41,28 @@ public class PlayerStats: MonoBehaviour
     {
         [SerializeField]
         [Range(0f, 1f)]
-        private float v;
-
-        private bool cooldown;
+        protected float v;
 
         public float Value
         {
             get { return v; }
         }
 
-        public bool Acquire(float amount)
+        public virtual bool Acquire(float amount)
         {
-            if (cooldown) return false;
-            if (amount >= v)
+            if (amount > v)
             {
-                v = 0f;
-                cooldown = true;
-                return true;
-            };
+                return false;
+            }
             v -= amount;
             return true;
         }
-        public void Fill(float amount)
+        public virtual void Fill(float amount)
         {
             v += amount;
             if (v > 1f)
             {
                 v = 1f;
-                cooldown = false;
             }
         }
 
@@ -80,6 +74,35 @@ public class PlayerStats: MonoBehaviour
         {
             get { return Mathf.Approximately(v, 0f); }
         }
+    }
+
+    [System.Serializable]
+    public class CooldownBar: Bar
+    {
+        private bool cooldown;
+
+        public override bool Acquire(float amount)
+        {
+            if (cooldown) return false;
+            if (amount >= v)
+            {
+                v = 0f;
+                cooldown = true;
+                return true;
+            };
+            v -= amount;
+            return true;
+        }
+        public override void Fill(float amount)
+        {
+            v += amount;
+            if (v > 1f)
+            {
+                v = 1f;
+                cooldown = false;
+            }
+        }
+
         public bool IsCooldown
         {
             get { return cooldown; }

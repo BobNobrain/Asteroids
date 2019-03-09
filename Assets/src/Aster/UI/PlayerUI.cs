@@ -16,18 +16,24 @@ public class PlayerUI: MonoBehaviour
         healthBarController.Start();
         oxygenBarController.Start();
         staminaBarController.Start();
+
+        healthBarController.blinkMode = BarController.BlinkMode.DANGER;
+        oxygenBarController.blinkMode = BarController.BlinkMode.DANGER;
+        staminaBarController.blinkMode = BarController.BlinkMode.COOLDOWN;
     }
 
     void Update()
     {
-        healthBarController.Update(player.Health.Value, player.Health.IsCooldown);
-        oxygenBarController.Update(player.Oxygen.Value, player.Oxygen.IsCooldown);
+        healthBarController.Update(player.Health.Value, false);
+        oxygenBarController.Update(player.Oxygen.Value, false);
         staminaBarController.Update(player.Stamina.Value, player.Stamina.IsCooldown);
     }
 
     [System.Serializable]
     public class BarController
     {
+        public enum BlinkMode { OFF, COOLDOWN, DANGER };
+
         public Slider uiBar;
         public Image uiBg;
         public Image uiFg;
@@ -44,6 +50,8 @@ public class PlayerUI: MonoBehaviour
 
         private bool danger, blink;
         private float dBlink;
+
+        public BlinkMode blinkMode = BlinkMode.OFF;
 
         public void Start()
         {
@@ -69,16 +77,28 @@ public class PlayerUI: MonoBehaviour
                 uiFg.color = regularFgColor;
             }
 
-            if (!blink && cooldown)
+            var newBlinkValue = false;
+            switch (blinkMode)
+            {
+                case BlinkMode.DANGER:
+                    newBlinkValue = danger;
+                    break;
+
+                case BlinkMode.COOLDOWN:
+                    newBlinkValue = cooldown;
+                    break;
+            }
+
+            if (!blink && newBlinkValue)
             {
                 // start blinking
                 dBlink = -BlinkSpeed;
             }
-            else if (blink && !cooldown)
+            else if (blink && !newBlinkValue)
             {
                 uiFg.color = danger ? dangerColor : regularFgColor;
             }
-            blink = cooldown;
+            blink = newBlinkValue;
 
             if (blink)
             {
