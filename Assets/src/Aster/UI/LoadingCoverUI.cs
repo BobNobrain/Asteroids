@@ -27,7 +27,7 @@ public class LoadingCoverUI: MonoBehaviour
             if (coverPlane.color.a < .01f)
             {
                 decay = false;
-                gameObject.SetActive(false);
+                coverPlane.gameObject.SetActive(false);
             }
         }
 
@@ -44,6 +44,9 @@ public class LoadingCoverUI: MonoBehaviour
             {
                 coverPlane.transform.GetChild(i).gameObject.SetActive(false);
             }
+
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
         }
     }
 }

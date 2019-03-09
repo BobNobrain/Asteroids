@@ -40,6 +40,13 @@ public class PlayerMovement: MonoBehaviour
 
     void Update()
     {
+        if (Input.GetButton("Cancel"))
+        {
+            Debug.Log("Quit");
+            Application.Quit();
+            return;
+        }
+
         dMouseX = Input.GetAxisRaw("Mouse X");
         dMouseY = Input.GetAxisRaw("Mouse Y");
 
@@ -49,7 +56,7 @@ public class PlayerMovement: MonoBehaviour
         dMoveRightward = Input.GetAxisRaw("Horizontal");
 
         // acceleration is on when shift is pressed & we have stamina
-        accelerate = Input.GetAxisRaw("Shift") > .5f && stats.Stamina.Acquire(Time.deltaTime * AccelStaminaConsumption);
+        accelerate = Input.GetButton("Shift") && stats.Stamina.Acquire(Time.deltaTime * AccelStaminaConsumption);
     }
 
     void FixedUpdate()
