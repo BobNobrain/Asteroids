@@ -24,6 +24,7 @@ public class SimpleBar: IBar
         if (amount > v)
         {
             if (emptyListener != null) emptyListener();
+            v = 0f;
             return false;
         }
         v -= amount;
