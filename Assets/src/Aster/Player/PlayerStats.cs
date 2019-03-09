@@ -20,6 +20,15 @@ public class PlayerStats: MonoBehaviour
     [SerializeField]
     private float MinimumImpulseToHurt = 450f;
 
+    void Start()
+    {
+        Health.emptyListener = () =>
+        {
+            Debug.Log("YOU DIED");
+            Application.Quit();
+        };
+    }
+
     void Update()
     {
         float dt = Time.deltaTime;
@@ -27,12 +36,7 @@ public class PlayerStats: MonoBehaviour
         // Breathe
         if (!Oxygen.Acquire(dt * BreathSpeed))
         {
-            var dead = !Health.Acquire(dt * AsphyxiaDamage);
-            if (dead)
-            {
-                Debug.Log("YOU DIED");
-                Application.Quit();
-            }
+            Health.Acquire(dt * AsphyxiaDamage);
         }
 
         // Regenerate stamina
