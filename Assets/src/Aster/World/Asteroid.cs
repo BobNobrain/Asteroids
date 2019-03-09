@@ -7,11 +7,12 @@ namespace Aster.World {
 
 public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightProvider
 {
-    new private SphereCollider collider;
+    private SphereCollider physicsCollider;
     private Rigidbody body;
     private MeshFilter filter;
     private Mesh mesh;
     private CubeMeshGenerator meshGenerator;
+    private object _lock = new object();
 
     [HideInInspector] public Chunk region;
 
@@ -29,9 +30,6 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
     public float density = 1f;
 
     public Material material;
-
-    [HideInInspector] public ParticleSystem splashEffect;
-    public int ParticlesToEmit = 100;
 
     public bool LiveReload = false;
 
@@ -68,7 +66,7 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
     #region Initialization
     void Awake()
     {
-        collider = GetComponent<SphereCollider>();
+        physicsCollider = GetComponent<SphereCollider>();
         body = GetComponent<Rigidbody>();
 
         filter = GetComponent<MeshFilter>();
@@ -95,19 +93,26 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
     #region Generation
     public void Generate(bool regenerateMesh)
     {
-        var cubeData = regenerateMesh ? meshGenerator.GenerateCube(resolution) : null;
+        CubeMeshGenerator.CubeData cubeData = null;
+        if (regenerateMesh)
+        {
+            lock (_lock)
+            {
+                cubeData = meshGenerator.GenerateCube(resolution);
+            }
+        }
 
         Dispatcher.InvokeAsync(() => {
             if (this == null) return;
 
-            if (colliderEnabled == collider.isTrigger) collider.isTrigger = !colliderEnabled;
+            if (colliderEnabled == physicsCollider.isTrigger) physicsCollider.isTrigger = !colliderEnabled;
 
             if (cubeData != null)
             {
                 if (colliderEnabled)
                 {
                     float minh = cubeData.minmax.x, maxh = cubeData.minmax.y;
-                    collider.radius = minh + (maxh - minh) * .9f;
+                    physicsCollider.radius = minh + (maxh - minh) * .9f;
                 }
 
                 mesh.Clear();
@@ -145,22 +150,6 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
 
         Generate(regenerateMesh);
     }
-
-    #region Effects
-    void OnCollisionEnter(Collision c)
-    {
-        if (splashEffect == null) return;
-
-        if (c.relativeVelocity.magnitude > .01f)
-        {
-            foreach (ContactPoint contact in c.contacts)
-            {
-                splashEffect.transform.position = contact.point;
-                splashEffect.Emit(ParticlesToEmit);
-            }
-        }
-    }
-    #endregion
 
     // public void OnDrawGizmosSelected()
     // {
