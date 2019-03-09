@@ -20,9 +20,11 @@ public class PlayerMovement: MonoBehaviour
     public float MaxMovementSpeed = 5f;
     public float MovementAccel = .5f;
     public float StrafeAccel = .4f;
+    public float ShiftAccelScale = 2f;
 
     private float dMouseX, dMouseY, dMouseZ;
     private float dMoveForward, dMoveRightward;
+    private bool accelerate;
 
     private Rigidbody body;
 
@@ -40,6 +42,8 @@ public class PlayerMovement: MonoBehaviour
 
         dMoveForward = Input.GetAxisRaw("Vertical");
         dMoveRightward = Input.GetAxisRaw("Horizontal");
+
+        accelerate = Input.GetAxisRaw("Shift") > .5f;
     }
 
     void FixedUpdate()
@@ -74,12 +78,17 @@ public class PlayerMovement: MonoBehaviour
         var rightward = transform.right;
 
         var f = forward * dMoveForward * MovementAccel + rightward * dMoveRightward * StrafeAccel;
+        if (accelerate) f *= ShiftAccelScale;
         body.AddForce(f, ForceMode.Impulse);
 
         v = body.velocity;
-        if (v.magnitude > MaxMovementSpeed)
+        float max = MaxMovementSpeed;
+        if (accelerate) max *= ShiftAccelScale;
+
+        float real = v.magnitude;
+        if (real > max)
         {
-            v = v.normalized * MaxMovementSpeed;
+            v = v.normalized * Mathf.Lerp(real, max, max * .05f);
             body.velocity = v;
         }
     }
