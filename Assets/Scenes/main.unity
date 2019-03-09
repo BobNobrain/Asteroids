@@ -249,6 +249,7 @@ MonoBehaviour:
   StaminaRegenerationSpeed: 0.5
   BreathSpeed: 0.001
   AsphyxiaDamage: 0.01
+  MinimumImpulseToHurt: 450
 --- !u!1 &199751992
 GameObject:
   m_ObjectHideFlags: 0

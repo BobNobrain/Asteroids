@@ -18,6 +18,9 @@ public class PlayerStats: MonoBehaviour
     [SerializeField]
     private float AsphyxiaDamage = .01f;
 
+    [SerializeField]
+    private float MinimumImpulseToHurt = 450f;
+
     void Update()
     {
         float dt = Time.deltaTime;
@@ -29,11 +32,22 @@ public class PlayerStats: MonoBehaviour
             if (dead)
             {
                 Debug.Log("YOU DIED");
+                Application.Quit();
             }
         }
 
         // Regenerate stamina
         Stamina.Fill(dt * StaminaRegenerationSpeed);
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        var imp = collision.impulse / Time.fixedDeltaTime;
+        var m = imp.magnitude;
+        if (m > MinimumImpulseToHurt)
+        {
+            Health.Acquire((m - MinimumImpulseToHurt) / 3000f);
+        }
     }
 
     [System.Serializable]
