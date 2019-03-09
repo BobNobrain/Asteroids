@@ -7,15 +7,21 @@ namespace Aster.UI {
 public class PlayerUI: MonoBehaviour
 {
     public PlayerStats player;
+    public BarController healthBarController;
+    public BarController oxygenBarController;
     public BarController staminaBarController;
 
     void Start()
     {
+        healthBarController.Start();
+        oxygenBarController.Start();
         staminaBarController.Start();
     }
 
     void Update()
     {
+        healthBarController.Update(player.Health.Value, player.Health.IsCooldown);
+        oxygenBarController.Update(player.Oxygen.Value, player.Oxygen.IsCooldown);
         staminaBarController.Update(player.Stamina.Value, player.Stamina.IsCooldown);
     }
 

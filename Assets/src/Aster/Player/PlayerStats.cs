@@ -6,13 +6,34 @@ namespace Aster.Player {
 
 public class PlayerStats: MonoBehaviour
 {
+    public Bar Health;
+    public Bar Oxygen;
     public Bar Stamina;
 
     [SerializeField]
     private float StaminaRegenerationSpeed = .5f;
+
+    [SerializeField]
+    private float BreathSpeed = .001f;
+    [SerializeField]
+    private float AsphyxiaDamage = .01f;
+
     void Update()
     {
-        Stamina.Regenerate(Time.deltaTime * StaminaRegenerationSpeed);
+        float dt = Time.deltaTime;
+
+        // Breathe
+        if (!Oxygen.Acquire(dt * BreathSpeed))
+        {
+            var dead = Health.Acquire(dt * AsphyxiaDamage);
+            if (dead)
+            {
+                Debug.Log("YOU DIED");
+            }
+        }
+
+        // Regenerate stamina
+        Stamina.Fill(dt * StaminaRegenerationSpeed);
     }
 
     [System.Serializable]
@@ -41,7 +62,7 @@ public class PlayerStats: MonoBehaviour
             v -= amount;
             return true;
         }
-        public void Regenerate(float amount)
+        public void Fill(float amount)
         {
             v += amount;
             if (v > 1f)
