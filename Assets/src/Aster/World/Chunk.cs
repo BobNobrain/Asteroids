@@ -82,7 +82,13 @@ public class Chunk: MonoBehaviour, ILODController {
     public void Dispose()
     {
         // TODO: save chunk state to disk
-        Dispatcher.InvokeAsync(() => Destroy(gameObject));
+        Dispatcher.InvokeAsync(() => {
+            foreach (var a in asteroids)
+            {
+                Destroy(a.gameObject);
+            }
+            Destroy(gameObject);
+        });
     }
 
     // public void OnDrawGizmos()

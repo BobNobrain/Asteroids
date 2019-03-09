@@ -19,6 +19,9 @@ public class MapGenerator: MonoBehaviour
 
     public GameObject chunkPrefab;
 
+    public Transform ChunksRoot;
+    public Transform AstersRoot;
+
     private ChunkGenerator generator;
     private Chunk center;
     private List<Chunk> activeChunks;

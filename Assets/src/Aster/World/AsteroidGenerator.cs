@@ -6,13 +6,13 @@ namespace Aster.World {
 
 public class AsteroidGenerator
 {
-    public static Asteroid Generate(Vector3 position, AsteroidType type, GameObject parentChunk)
+    public static Asteroid Generate(Vector3 position, AsteroidType type, Transform parent)
     {
         var asteroidObj = GameObject.Instantiate(
             type.asteroidPrefab,
             position,
             Random.rotation,
-            parentChunk.transform
+            parent
         );
 
         var asteroid = asteroidObj.GetComponent<Asteroid>();

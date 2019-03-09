@@ -5,13 +5,11 @@ namespace Aster.World.Generation {
 
 public class ChunkGenerator
 {
-    private Transform root;
     private float chunkSize;
     private MapGenerator g;
 
     public ChunkGenerator(MapGenerator generator, float size)
     {
-        root = generator.transform;
         chunkSize = size;
         g = generator;
     }
@@ -22,7 +20,7 @@ public class ChunkGenerator
         int n = GetRandomAsteroidsCount(type);
         var b = new Bounds(center, chunkSize);
 
-        var chunkObj = GameObject.Instantiate(chunkPrefab, center, Quaternion.identity, root);
+        var chunkObj = GameObject.Instantiate(chunkPrefab, center, Quaternion.identity, g.ChunksRoot);
         var chunk = chunkObj.GetComponent<Chunk>();
         chunk.Init(chunkSize, g, coords);
 
@@ -33,7 +31,7 @@ public class ChunkGenerator
 
             var asteroidType = Rnd.WeightedPick(type.availableTypes);
 
-            var asteroid = AsteroidGenerator.Generate(place, asteroidType, chunkObj);
+            var asteroid = AsteroidGenerator.Generate(place, asteroidType, g.AstersRoot);
             chunk.AttachAsteroid(asteroid);
         }
 

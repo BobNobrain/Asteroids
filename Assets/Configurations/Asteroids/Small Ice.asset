@@ -11,7 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a66dc6fd84eb6dc499401199f5279c36, type: 3}
   m_Name: Small Ice
   m_EditorClassIdentifier: 
-  asteroidPrefab: {fileID: 1912228942853026, guid: cfb1e02ba059bc1448eaaa757da99044,
+  asteroidPrefab: {fileID: 1168095868952282, guid: cfb1e02ba059bc1448eaaa757da99044,
     type: 2}
   MinRadius: 0.3
   MaxRadius: 0.9
