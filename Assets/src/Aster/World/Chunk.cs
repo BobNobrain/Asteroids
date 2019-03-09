@@ -28,11 +28,13 @@ public class Chunk: MonoBehaviour, ILODController {
 
     public void AttachAsteroid(Asteroid a)
     {
+        // Debug.Log("Attaching an asteroid to chunk");
         asteroids.Add(a);
         a.region = this;
     }
     public void DetachAsteroid(Asteroid a)
     {
+        Debug.Log("Detaching an asteroid from chunk");
         asteroids.Remove(a);
         a.region = null;
     }
@@ -62,8 +64,7 @@ public class Chunk: MonoBehaviour, ILODController {
 
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Collision with " + other.gameObject.name + ": " + other.gameObject.layer);
-        if (other.gameObject.layer  == guestsLayerMask)
+        if (other.gameObject.layer == guestsLayerMask)
         {
             var asteroid = other.gameObject.GetComponent<Asteroid>();
             if (asteroid != null)

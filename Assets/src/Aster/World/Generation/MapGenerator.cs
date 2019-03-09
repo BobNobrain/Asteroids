@@ -23,7 +23,11 @@ public class MapGenerator: MonoBehaviour
     private Chunk center;
     private List<Chunk> activeChunks;
 
-    public ParticleSystem asteroidSplashEffect;
+    public object _lock = new object();
+    public volatile int ProcessingChunksCount = 0;
+
+    public int TotalChunks { get; private set; }
+
 
     void Start()
     {
@@ -31,7 +35,8 @@ public class MapGenerator: MonoBehaviour
         generator = new ChunkGenerator(this, chunkSize);
 
         int cubeSide = MaxViewDistance * 2 + 1;
-        activeChunks = new List<Chunk>(cubeSide * cubeSide * cubeSide);
+        TotalChunks = cubeSide * cubeSide * cubeSide;
+        activeChunks = new List<Chunk>(TotalChunks);
 
         GenerateZeroNeighborhood();
     }
@@ -93,6 +98,11 @@ public class MapGenerator: MonoBehaviour
             activeChunks.Add(chunk);
         }
         Debug.Log("Generated new chunks: " + diff.Count);
+        lock (_lock)
+        {
+            ProcessingChunksCount = diff.Count;
+            // Debug.Log("Set to" + ProcessingChunksCount);
+        }
     }
     private void UpdateLODs()
     {
@@ -116,11 +126,24 @@ public class MapGenerator: MonoBehaviour
                 if (lod > 1f) lod = 1f;
             }
 
-            new Future<Object>().Process(() => {
+            var f = new Future<Object>();
+            f.Process(() => {
                 chunk.SetLOD(lod);
+                lock (_lock)
+                {
+                    ProcessingChunksCount -= 1;
+                    // Debug.Log("-- =>" + ProcessingChunksCount);
+                }
                 return null;
             });
-            // chunk.SetLOD(lod);
+            f.OnError(future => {
+                Debug.LogError(future.error);
+                lock (_lock)
+                {
+                    ProcessingChunksCount -= 1;
+                    // Debug.Log("-- =>" + ProcessingChunksCount);
+                }
+            });
         }
     }
 }

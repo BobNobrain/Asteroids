@@ -34,8 +34,6 @@ public class ChunkGenerator
             var asteroidType = Rnd.WeightedPick(type.availableTypes);
 
             var asteroid = AsteroidGenerator.Generate(place, asteroidType, chunkObj);
-            // TODO: refactor!
-            asteroid.splashEffect = g.asteroidSplashEffect;
             chunk.AttachAsteroid(asteroid);
         }
 
@@ -52,13 +50,14 @@ public class ChunkGenerator
 
     private class Bounds
     {
-        public float minx, maxx;
-        public float miny, maxy;
-        public float minz, maxz;
+        private float minx, maxx;
+        private float miny, maxy;
+        private float minz, maxz;
 
         public Bounds(Vector3 center, float size)
         {
-            float half = size / 2;
+            float padding = size * .1f;
+            float half = size / 2 - padding;
 
             minx = center.x - half;
             maxx = center.x + half;
