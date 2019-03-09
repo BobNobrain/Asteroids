@@ -5,9 +5,9 @@ namespace Aster.Utils.Bars {
 [System.Serializable]
 public class SimpleBar: IBar
 {
-    protected BarEmptyListener emptyListener;
-    protected BarChangedListener changedListener;
-    protected BarFullListener fullListener;
+    public BarEmptyListener emptyListener;
+    public BarChangedListener changedListener;
+    public BarFullListener fullListener;
 
     [SerializeField]
     [Range(0f, 1f)]
