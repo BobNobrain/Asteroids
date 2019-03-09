@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
-namespace Aster {
-namespace Player {
+namespace Aster.Player {
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(PlayerStats))]
 public class PlayerMovement: MonoBehaviour
 {
     [Range(1e-2f, 1f)]
@@ -22,15 +22,20 @@ public class PlayerMovement: MonoBehaviour
     public float StrafeAccel = .4f;
     public float ShiftAccelScale = 2f;
 
+    [Range(0, 5f)]
+    public float AccelStaminaConsumption = .5f;
+
     private float dMouseX, dMouseY, dMouseZ;
     private float dMoveForward, dMoveRightward;
     private bool accelerate;
 
     private Rigidbody body;
+    private PlayerStats stats;
 
     void Awake()
     {
         body = GetComponent<Rigidbody>();
+        stats = GetComponent<PlayerStats>();
     }
 
     void Update()
@@ -43,7 +48,8 @@ public class PlayerMovement: MonoBehaviour
         dMoveForward = Input.GetAxisRaw("Vertical");
         dMoveRightward = Input.GetAxisRaw("Horizontal");
 
-        accelerate = Input.GetAxisRaw("Shift") > .5f;
+        // acceleration is on when shift is pressed & we have stamina
+        accelerate = Input.GetAxisRaw("Shift") > .5f && stats.Stamina.Acquire(Time.deltaTime * AccelStaminaConsumption);
     }
 
     void FixedUpdate()
@@ -94,4 +100,4 @@ public class PlayerMovement: MonoBehaviour
     }
 }
 
-}}
+}
