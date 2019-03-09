@@ -15,13 +15,13 @@ public class AsteroidEditor: Editor {
             base.OnInspectorGUI();
             if (check.changed && item.LiveReload)
             {
-                item.Generate(true);
+                item.Generate(0, item.resolution, true);
             }
         }
 
         if (GUILayout.Button("Regenerate"))
         {
-            item.Generate(true);
+            item.Generate(0, item.resolution, true);
         }
     }
 

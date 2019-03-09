@@ -10,7 +10,11 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
     private SphereCollider physicsCollider;
     private Rigidbody body;
     private MeshFilter filter;
-    private Mesh mesh;
+
+    private Mesh[] meshes;
+    private float[] colliderRadiuses;
+    private bool[] meshesInitialized;
+
     private CubeMeshGenerator meshGenerator;
     private object _lock = new object();
 
@@ -69,9 +73,17 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
         physicsCollider = GetComponent<SphereCollider>();
         body = GetComponent<Rigidbody>();
 
+        meshes = new Mesh[]
+        {
+            new Mesh(),
+            new Mesh(),
+            new Mesh()
+        };
+        colliderRadiuses = new float[] { 0f, 0f, 0f };
+        meshesInitialized = new bool[] { false, false, false };
+
         filter = GetComponent<MeshFilter>();
-        mesh = new Mesh();
-        filter.sharedMesh = mesh;
+        filter.sharedMesh = meshes[0];
 
         meshGenerator = new CubeMeshGenerator(this);
 
@@ -91,10 +103,12 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
     #endregion
 
     #region Generation
-    public void Generate(bool regenerateMesh)
+    public void Generate(int resolutionIndex, int resolution, bool forceRegenerate)
     {
         CubeMeshGenerator.CubeData cubeData = null;
-        if (regenerateMesh)
+        Mesh currentMesh = meshes[resolutionIndex];
+
+        if (forceRegenerate || !meshesInitialized[resolutionIndex])
         {
             lock (_lock)
             {
@@ -112,17 +126,26 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
                 if (colliderEnabled)
                 {
                     float minh = cubeData.minmax.x, maxh = cubeData.minmax.y;
-                    physicsCollider.radius = minh + (maxh - minh) * .9f;
+                    colliderRadiuses[resolutionIndex] = minh + (maxh - minh) * .9f;
                 }
 
-                mesh.Clear();
-                mesh.vertices = cubeData.vertices;
-                mesh.triangles = cubeData.triangles;
-                mesh.uv = cubeData.uvs;
+                currentMesh.Clear();
+                currentMesh.vertices = cubeData.vertices;
+                currentMesh.triangles = cubeData.triangles;
+                currentMesh.uv = cubeData.uvs;
 
-                mesh.RecalculateNormals();
-                mesh.RecalculateTangents();
+                currentMesh.RecalculateNormals();
+                currentMesh.RecalculateTangents();
+
+                meshesInitialized[resolutionIndex] = true;
             }
+
+            if (colliderEnabled)
+            {
+                physicsCollider.radius = colliderRadiuses[resolutionIndex];
+            }
+
+            filter.sharedMesh = meshes[resolutionIndex];
         });
     }
     #endregion
@@ -134,21 +157,32 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
 
     public void SetLOD(float percent)
     {
-        int newResolution;
+        // 0 for minimal, 1 for middle, 2 for maximal resolutions
+        // used to index appropriate elements in meshes[], meshesInitalized[] and colliderRadiuses[]
+        int resolutionIndex;
 
         if (percent > lodHighTreshold)
-            newResolution = maxResolution;
+        {
+            resolution = maxResolution;
+            resolutionIndex = 2;
+        }
         else if (percent < lodLowTreshold)
-            newResolution = minResolution;
+        {
+            resolution = minResolution;
+            resolutionIndex = 0;
+        }
         else
-            newResolution = middleResolution;
+        {
+            resolution = middleResolution;
+            resolutionIndex = 1;
+        }
 
-        bool regenerateMesh = resolution != newResolution;
-        resolution = newResolution;
         // only for current chunk and maybe its neighbours, depends on MapGenerator::MinViewDistance
         colliderEnabled = Mathf.Approximately(percent, 1f);
 
-        Generate(regenerateMesh);
+        // passed via args and not as class fields to copy them
+        // in stack and have an unique and unchanged copy
+        Generate(resolutionIndex, resolution, false);
     }
 
     // public void OnDrawGizmosSelected()
