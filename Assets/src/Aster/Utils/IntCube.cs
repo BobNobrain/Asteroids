@@ -21,11 +21,22 @@ public class IntCube
         return side * side * side;
     }
 
+    /// <summary>
+    /// Calculates if given point is inside IntCube with center in (0, 0, 0)
+    /// </summary>
+    /// <param name="r">IntCube radius</param>
+    /// <param name="point">Given point</param>
+    /// <returns>True if point is within the cube, false otherwise</returns>
     private static bool withinZeroCube(int r, Vector3Int point)
     {
         return Math.Abs(point.x) <= r && Math.Abs(point.y) <= r && Math.Abs(point.z) <= r;
     }
 
+    /// <summary>
+    /// Calculates difference between this IntCube and wiping IntCube
+    /// </summary>
+    /// <param name="wiping">The IntCube to subtract</param>
+    /// <returns>Set of integer points that remain of this cube after subtracting wiping cube</returns>
     public List<Vector3Int> Diff(IntCube wiping)
     {
         var result = new List<Vector3Int>();
@@ -58,9 +69,42 @@ public class IntCube
         return result;
     }
 
+    /// <summary>
+    /// Calculates if point is inside IntCube with given radius and center
+    /// </summary>
+    /// <param name="cubeCenter">Cube center</param>
+    /// <param name="cubeR">Cube radius</param>
+    /// <param name="point">The point to test</param>
+    /// <returns>True if point is inside IntCube, false otherwise</returns>
     public static bool WithinCube(Vector3Int cubeCenter, int cubeR, Vector3Int point)
     {
         return withinZeroCube(cubeR, point - cubeCenter);
+    }
+
+    /// <summary>
+    /// Calculates if inner IntCube is fully inside outer IntCube
+    /// </summary>
+    /// <param name="outerCubeCenter">Center of outer IntCube</param>
+    /// <param name="outerCubeR">Radius of outer IntCube</param>
+    /// <param name="innerCubeCenter">Center of inner IntCube</param>
+    /// <param name="innerCubeR">Radius of inner IntCube</param>
+    /// <returns>True if inner cube is fully inside outer, false otherwise</returns>
+    public static bool WithinCube(
+        Vector3Int outerCubeCenter,
+        int outerCubeR,
+        Vector3Int innerCubeCenter,
+        int innerCubeR
+    )
+    {
+        int dx = Math.Abs(outerCubeCenter.x - innerCubeCenter.x);
+        int dy = Math.Abs(outerCubeCenter.y - innerCubeCenter.y);
+        int dz = Math.Abs(outerCubeCenter.z - innerCubeCenter.z);
+
+        int max = dx;
+        if (dy > max) max = dy;
+        if (dz > max) max = dz;
+
+        return max + innerCubeR <= outerCubeR;
     }
 }
 

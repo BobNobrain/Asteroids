@@ -146,6 +146,8 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
             }
 
             filter.sharedMesh = meshes[resolutionIndex];
+
+            region.root.NotifyRendered();
         });
     }
     #endregion
@@ -157,6 +159,26 @@ public class Asteroid: MonoBehaviour, ILODController, CubeMeshGenerator.IHeightP
 
     public void SetLOD(float percent)
     {
+        // deactivate asteroid at all when LoD is 0
+        if (Mathf.Approximately(percent, 0f))
+        {
+            Dispatcher.InvokeAsync(() => {
+                if (gameObject.activeSelf)
+                    gameObject.SetActive(false);
+
+                region.root.NotifyRendered();
+            });
+
+            return;
+        }
+        else
+        {
+            Dispatcher.InvokeAsync(() => {
+                if (!gameObject.activeSelf)
+                    gameObject.SetActive(true);
+            });
+        }
+
         // 0 for minimal, 1 for middle, 2 for maximal resolutions
         // used to index appropriate elements in meshes[], meshesInitalized[] and colliderRadiuses[]
         int resolutionIndex;

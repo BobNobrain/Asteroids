@@ -11,7 +11,7 @@ public class Chunk: MonoBehaviour, ILODController {
     public float lod = 0f;
     private BoxCollider bounds;
 
-    private MapGenerator root;
+    public MapGenerator root;
 
     public Vector3Int Coords;
 
@@ -91,10 +91,10 @@ public class Chunk: MonoBehaviour, ILODController {
         });
     }
 
-    // public void OnDrawGizmos()
-    // {
-    //     Gizmos.DrawWireCube(transform.position, bounds.size);
-    // }
+    public void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(transform.position, bounds.size);
+    }
 }
 
 }
