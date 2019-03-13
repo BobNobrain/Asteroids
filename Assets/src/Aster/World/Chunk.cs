@@ -91,10 +91,10 @@ public class Chunk: MonoBehaviour, ILODController {
         });
     }
 
-    public void OnDrawGizmos()
-    {
-        Gizmos.DrawWireCube(transform.position, bounds.size);
-    }
+    // public void OnDrawGizmos()
+    // {
+    //     Gizmos.DrawWireCube(transform.position, bounds.size);
+    // }
 }
 
 }
