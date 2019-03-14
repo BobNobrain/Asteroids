@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Aster.Objects.Rope {
 
 [RequireComponent(typeof(SpringJoint))]
+[RequireComponent(typeof(LineRenderer))]
 public class RopeGun: MonoBehaviour
 {
     [Range(1f, 50f)]
@@ -19,17 +20,30 @@ public class RopeGun: MonoBehaviour
     public int MaxRopeSegments;
 
     public List<SpringJoint> RopeJoints;
+    public List<Transform> RopeTransforms;
     public Rigidbody lastSpawned = null;
 
     private SpringJoint selfJoint;
+    private LineRenderer ropeRenderer;
 
     public void Awake()
     {
         selfJoint = GetComponent<SpringJoint>();
+        ropeRenderer = GetComponent<LineRenderer>();
     }
 
     public void Update()
     {
+        // update line renderer points
+        if (ropeRenderer.positionCount != RopeTransforms.Count)
+        {
+            ropeRenderer.positionCount = RopeTransforms.Count;
+        }
+        for (int i = 0; i < RopeTransforms.Count; i++)
+        {
+            ropeRenderer.SetPosition(i, RopeTransforms[i].position);
+        }
+
         if (lastSpawned != null) return;
 
         if (Input.GetButton("Fire1"))
@@ -60,6 +74,8 @@ public class RopeGun: MonoBehaviour
 
         // shoot projectile away
         lastSpawned.AddForce(transform.forward * ShootForce, ForceMode.Impulse);
+
+        RopeTransforms.Add(projectile.transform);
     }
 
     public void SpawnRopeSegment()
@@ -77,6 +93,7 @@ public class RopeGun: MonoBehaviour
 
         var joint = ropeSegment.GetComponent<SpringJoint>();
         RopeJoints.Add(joint);
+        RopeTransforms.Add(ropeSegment.transform);
 
         joint.connectedBody = lastSpawned;
 
