@@ -40,7 +40,7 @@ GameObject:
   - component: {fileID: 135446317444293054}
   - component: {fileID: 54270298203742296}
   m_Layer: 0
-  m_Name: Rope Gun Projectile
+  m_Name: RopeGunAnchor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

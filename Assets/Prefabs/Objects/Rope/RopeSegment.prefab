@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 145137774839324238}
   - component: {fileID: 136591442076637810}
   m_Layer: 0
-  m_Name: Rope Segment
+  m_Name: RopeSegment
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

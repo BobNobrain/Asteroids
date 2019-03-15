@@ -6,10 +6,25 @@ namespace Aster.Objects {
 [RequireComponent(typeof(LineRenderer))]
 public class Rope: MonoBehaviour
 {
+    public struct Segment
+    {
+        public Transform transform;
+        public SpringJoint spring;
+        public Rigidbody body;
+
+        public Segment(GameObject from)
+        {
+            transform = from.transform;
+            spring = from.GetComponent<SpringJoint>();
+            body = from.GetComponent<Rigidbody>();
+        }
+    }
+
     private LineRenderer ropeRenderer;
 
-    private List<Transform> ropeTransforms;
-    private Rigidbody lastSegmentBody;
+    private List<Segment> ropeSegments;
+    private Rigidbody head;
+    private Segment cargo;
 
     void Awake()
     {
@@ -18,23 +33,22 @@ public class Rope: MonoBehaviour
 
     public void Init(int maxSize)
     {
-        ropeTransforms = new List<Transform>(maxSize);
-        lastSegmentBody = null;
+        ropeSegments = new List<Segment>(maxSize);
     }
 
     public void Update()
     {
         // update line renderer points
         // TODO: more precise drawing to suit real colliders positions
-        if (ropeRenderer.positionCount != ropeTransforms.Count + 1)
+        if (ropeRenderer.positionCount != ropeSegments.Count + 1)
         {
-            ropeRenderer.positionCount = ropeTransforms.Count + 1;
+            ropeRenderer.positionCount = ropeSegments.Count + 1;
         }
-        for (int i = 0; i < ropeTransforms.Count; i++)
+        for (int i = 0; i < ropeSegments.Count; i++)
         {
-            ropeRenderer.SetPosition(i, ropeTransforms[i].position);
+            ropeRenderer.SetPosition(i, ropeSegments[i].transform.position);
         }
-        ropeRenderer.SetPosition(ropeTransforms.Count, transform.position);
+        ropeRenderer.SetPosition(ropeSegments.Count, transform.position);
     }
 
     /// <summary>
@@ -42,31 +56,25 @@ public class Rope: MonoBehaviour
     /// Rope segment must have RigidBody and SpringJoint components
     /// </summary>
     /// <param name="ropeSegment">GameObject representing a segment to attach</param>
-    /// <returns>RigidBody of the segment (to optimize RopeGun calculations)</returns>
-    public Rigidbody AttachSegment(GameObject ropeSegment)
+    /// <returns>Resulting segment structure</returns>
+    public Segment AttachSegment(GameObject ropeSegment)
     {
-        ropeTransforms.Add(ropeSegment.transform);
-
-        var joint = ropeSegment.GetComponent<SpringJoint>();
-        joint.connectedBody = lastSegmentBody;
-
-        lastSegmentBody = ropeSegment.GetComponent<Rigidbody>();
-        return lastSegmentBody;
+        var segment = new Segment(ropeSegment);
+        segment.spring.connectedBody = ropeSegments[ropeSegments.Count - 1].body;
+        ropeSegments.Add(segment);
+        return segment;
     }
 
     /// <summary>
-    /// Attaches the beginning of this rope to a given RigidBody
+    /// Sets given RigidBody as rope head
     /// </summary>
     /// <param name="body">RigidBody to attach this rope to</param>
-    public void AttachTo(Rigidbody body)
+    public void AttachToHead(Rigidbody body)
     {
-        if (lastSegmentBody == null)
+        head = body;
+        if (ropeSegments.Count > 0)
         {
-            lastSegmentBody = body;
-        }
-        else
-        {
-            ropeTransforms[0].GetComponent<SpringJoint>().connectedBody = body;
+            ropeSegments[0].spring.connectedBody = head;
         }
     }
 
@@ -74,9 +82,15 @@ public class Rope: MonoBehaviour
     /// Attaches an external SpringJoint to last segment of the rope
     /// </summary>
     /// <param name="jointToAttach">SpringJoint that will be attached</param>
-    public void AttachSpringJointToRope(SpringJoint jointToAttach)
+    public void AttachCargo(GameObject cargoObject)
     {
-        jointToAttach.connectedBody = lastSegmentBody;
+        cargo = new Segment(cargoObject);
+        cargo.spring.connectedBody = ropeSegments[ropeSegments.Count - 1].body;
+    }
+
+    public void Shrink()
+    {
+        // TODO
     }
 }
 
