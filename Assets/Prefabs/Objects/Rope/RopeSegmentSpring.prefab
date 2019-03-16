@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 145137774839324238}
   - component: {fileID: 136591442076637810}
   m_Layer: 0
-  m_Name: RopeSegment
+  m_Name: RopeSegmentSpring
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -195,7 +195,7 @@ SpringJoint:
   m_AutoConfigureConnectedAnchor: 0
   m_ConnectedAnchor: {x: 0, y: 0, z: -1}
   serializedVersion: 2
-  m_Spring: 10
+  m_Spring: 1000
   m_Damper: 0.2
   m_MinDistance: 0
   m_MaxDistance: 0

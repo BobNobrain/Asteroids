@@ -65,5 +65,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lod: 0
+  root: {fileID: 0}
   Coords: {x: 0, y: 0, z: 0}
   guestsLayerMask: 8

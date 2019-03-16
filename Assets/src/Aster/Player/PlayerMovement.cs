@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Aster.Tools.Weapons;
 
 namespace Aster.Player {
 
@@ -32,10 +33,22 @@ public class PlayerMovement: MonoBehaviour
     private Rigidbody body;
     private PlayerStats stats;
 
+    // TODO: refactor
+    public RopeGun CurrentWeapon;
+    public GameObject BulletsRoot;
+
     void Awake()
     {
         body = GetComponent<Rigidbody>();
         stats = GetComponent<PlayerStats>();
+    }
+
+    void Start()
+    {
+        if (CurrentWeapon != null)
+        {
+            CurrentWeapon.Init(gameObject, BulletsRoot);
+        }
     }
 
     void Update()
@@ -45,6 +58,11 @@ public class PlayerMovement: MonoBehaviour
             Debug.Log("Quit");
             Application.Quit();
             return;
+        }
+
+        if (Input.GetButton("Fire1") && CurrentWeapon != null)
+        {
+            CurrentWeapon.PrimaryTrigger();
         }
 
         dMouseX = Input.GetAxisRaw("Mouse X");

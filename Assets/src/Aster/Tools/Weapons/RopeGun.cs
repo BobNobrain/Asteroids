@@ -4,12 +4,11 @@ using Aster.Objects;
 
 namespace Aster.Tools.Weapons {
 
-[RequireComponent(typeof(SpringJoint))]
 [RequireComponent(typeof(FixedJoint))]
 public class RopeGun: MonoBehaviour, IWeapon
 {
     #region Parameters
-    [Range(.1f, 5f)]
+    // [Range(.1f, 5f)]
     public float ShootForce = 1f;
 
     public GameObject RopeSegmentPrefab;
@@ -35,7 +34,7 @@ public class RopeGun: MonoBehaviour, IWeapon
 
     private int segmentsSpawned = 0;
 
-    private SpringJoint selfJoint;
+    private FixedJoint selfJoint;
     private Transform bulletsRoot;
 
     private Rigidbody playerBody;
@@ -46,17 +45,8 @@ public class RopeGun: MonoBehaviour, IWeapon
 
     void Awake()
     {
-        selfJoint = GetComponent<SpringJoint>();
+        selfJoint = null;
         playerJoint = GetComponent<FixedJoint>();
-    }
-
-    void Update()
-    {
-        // TODO: move this from here to player controller
-        if (Input.GetButton("Fire1"))
-        {
-            PrimaryTrigger();
-        }
     }
 
     void OnTriggerExit(Collider other)
@@ -87,14 +77,14 @@ public class RopeGun: MonoBehaviour, IWeapon
                 break;
 
             case State.EJECTING_ROPE:
-                activeRope = null;
-                // TODO: dispose the rope somehow?
-                state = State.FREE;
+                // activeRope = null;
+                // // TODO: dispose the rope somehow?
+                // state = State.FREE;
                 break;
 
             case State.CONNECTED:
                 // TODO: release the rope
-                selfJoint.connectedBody = null;
+                DetachGunFromRope();
                 activeRope = null;
                 state = State.FREE;
                 break;
@@ -118,8 +108,8 @@ public class RopeGun: MonoBehaviour, IWeapon
     {
         var projectile = Instantiate(
             RopeAnchorPrefab,
-            BulletSpawn.position,
-            Quaternion.LookRotation(BulletSpawn.forward, BulletSpawn.up),
+            BulletSpawn.position + BulletSpawn.forward * 2,
+            BulletSpawn.rotation,
             bulletsRoot
         );
         var body = projectile.GetComponent<Rigidbody>();
@@ -156,15 +146,20 @@ public class RopeGun: MonoBehaviour, IWeapon
     {
         if (segmentsSpawned >= MaxRopeSegments)
         {
-            EndRopeAndPullGun();
+            AttachGunToRope();
             return;
         }
 
-        var ropeSegment = Instantiate(RopeSegmentPrefab, transform.position, Quaternion.identity, bulletsRoot);
+        var ropeSegment = Instantiate(
+            RopeSegmentPrefab,
+            BulletSpawn.position,
+            BulletSpawn.rotation,
+            bulletsRoot
+        );
         var segment = activeRope.AttachSegment(ropeSegment);
 
         // shoot rope segment away too
-        segment.body.AddForce(transform.forward * ShootForce, ForceMode.Impulse);
+        // segment.body.AddForce(transform.forward * ShootForce, ForceMode.Impulse);
 
         segmentsSpawned += 1;
     }
@@ -172,10 +167,21 @@ public class RopeGun: MonoBehaviour, IWeapon
     /// <summary>
     /// Connects this gun to the activeRope end and sets this.state to connected
     /// </summary>
-    private void EndRopeAndPullGun()
+    private void AttachGunToRope()
     {
-        activeRope.AttachCargo(gameObject);
+        selfJoint = gameObject.AddComponent<FixedJoint>();
+        // selfJoint.spring = 1e20f;
+        // selfJoint.damper = 0.2f;
+        // selfJoint.breakForce = float.PositiveInfinity;
+
+        activeRope.AttachCargo(BulletSpawn, GetComponent<Rigidbody>(), selfJoint);
         state = State.CONNECTED;
+    }
+
+    private void DetachGunFromRope()
+    {
+        Destroy(selfJoint);
+        selfJoint = null;
     }
     #endregion
 }

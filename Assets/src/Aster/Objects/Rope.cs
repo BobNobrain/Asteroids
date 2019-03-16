@@ -40,15 +40,29 @@ public class Rope: MonoBehaviour
     {
         // update line renderer points
         // TODO: more precise drawing to suit real colliders positions
-        if (ropeRenderer.positionCount != ropeSegments.Count + 1)
+        int desiredPointsCount = ropeSegments.Count;
+        if (head != null) desiredPointsCount += 1;
+        if (cargo.transform != null) desiredPointsCount += 1;
+
+        if (ropeRenderer.positionCount != desiredPointsCount)
         {
-            ropeRenderer.positionCount = ropeSegments.Count + 1;
+            ropeRenderer.positionCount = desiredPointsCount;
+        }
+        int d = 0;
+        if (head != null)
+        {
+            ropeRenderer.SetPosition(0, head.transform.position);
+            d = 1;
         }
         for (int i = 0; i < ropeSegments.Count; i++)
         {
-            ropeRenderer.SetPosition(i, ropeSegments[i].transform.position);
+            ropeRenderer.SetPosition(i + d, ropeSegments[i].transform.position);
         }
-        ropeRenderer.SetPosition(ropeSegments.Count, transform.position);
+
+        if (cargo.transform != null)
+        {
+            ropeRenderer.SetPosition(desiredPointsCount - 1, cargo.transform.position);
+        }
     }
 
     /// <summary>
@@ -60,7 +74,14 @@ public class Rope: MonoBehaviour
     public Segment AttachSegment(GameObject ropeSegment)
     {
         var segment = new Segment(ropeSegment);
-        segment.spring.connectedBody = ropeSegments[ropeSegments.Count - 1].body;
+        if (ropeSegments.Count > 0)
+        {
+            segment.spring.connectedBody = ropeSegments[ropeSegments.Count - 1].body;
+        }
+        else
+        {
+            segment.spring.connectedBody = head;
+        }
         ropeSegments.Add(segment);
         return segment;
     }
@@ -81,11 +102,14 @@ public class Rope: MonoBehaviour
     /// <summary>
     /// Attaches an external SpringJoint to last segment of the rope
     /// </summary>
-    /// <param name="jointToAttach">SpringJoint that will be attached</param>
-    public void AttachCargo(GameObject cargoObject)
+    public void AttachCargo(Transform to, Rigidbody body, FixedJoint joint)
     {
-        cargo = new Segment(cargoObject);
-        cargo.spring.connectedBody = ropeSegments[ropeSegments.Count - 1].body;
+        cargo = new Segment();
+        cargo.transform = to;
+        cargo.body = body;
+        cargo.spring = null;
+
+        joint.connectedBody = ropeSegments[ropeSegments.Count - 1].body;
     }
 
     public void Shrink()
