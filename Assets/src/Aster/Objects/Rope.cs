@@ -6,115 +6,77 @@ namespace Aster.Objects {
 [RequireComponent(typeof(LineRenderer))]
 public class Rope: MonoBehaviour
 {
-    public struct Segment
-    {
-        public Transform transform;
-        public SpringJoint spring;
-        public Rigidbody body;
-
-        public Segment(GameObject from)
-        {
-            transform = from.transform;
-            spring = from.GetComponent<SpringJoint>();
-            body = from.GetComponent<Rigidbody>();
-        }
-    }
-
     private LineRenderer ropeRenderer;
 
-    private List<Segment> ropeSegments;
-    private Rigidbody head;
-    private Segment cargo;
+    private List<Transform> ropePointTransforms;
+    private List<Rigidbody> ropePointBodies;
+
+    public int PointCount
+    { get { return ropePointTransforms == null ? 0 : ropePointTransforms.Count; } }
+
+    public int MaxPoints;
+    public GameObject PointPrefab;
+    public GameObject Head;
+
+    public FixedJoint CargoJoint;
 
     void Awake()
     {
         ropeRenderer = GetComponent<LineRenderer>();
-    }
+        ropePointBodies = new List<Rigidbody>(MaxPoints);
+        ropePointTransforms = new List<Transform>(MaxPoints);
 
-    public void Init(int maxSize)
-    {
-        ropeSegments = new List<Segment>(maxSize);
+        ropePointTransforms.Add(Head.transform);
+        ropePointBodies.Add(Head.GetComponent<Rigidbody>());
     }
 
     public void Update()
     {
         // update line renderer points
-        // TODO: more precise drawing to suit real colliders positions
-        int desiredPointsCount = ropeSegments.Count;
-        if (head != null) desiredPointsCount += 1;
-        if (cargo.transform != null) desiredPointsCount += 1;
+        int desiredPointsCount = ropePointTransforms.Count;
 
         if (ropeRenderer.positionCount != desiredPointsCount)
         {
             ropeRenderer.positionCount = desiredPointsCount;
         }
-        int d = 0;
-        if (head != null)
-        {
-            ropeRenderer.SetPosition(0, head.transform.position);
-            d = 1;
-        }
-        for (int i = 0; i < ropeSegments.Count; i++)
-        {
-            ropeRenderer.SetPosition(i + d, ropeSegments[i].transform.position);
-        }
 
-        if (cargo.transform != null)
+        for (int i = 0; i < ropePointTransforms.Count; i++)
         {
-            ropeRenderer.SetPosition(desiredPointsCount - 1, cargo.transform.position);
+            ropeRenderer.SetPosition(i, ropePointTransforms[i].position);
         }
     }
 
-    /// <summary>
-    /// Attaches a new rope segment to the end of this rope.
-    /// Rope segment must have RigidBody and SpringJoint components
-    /// </summary>
-    /// <param name="ropeSegment">GameObject representing a segment to attach</param>
-    /// <returns>Resulting segment structure</returns>
-    public Segment AttachSegment(GameObject ropeSegment)
+    // TODO: (Vector3 at, ...)
+    public void SpawnSegment(float distance)
     {
-        var segment = new Segment(ropeSegment);
-        if (ropeSegments.Count > 0)
+        Transform lastT = ropePointTransforms[ropePointTransforms.Count - 1];
+        Vector3 at = lastT.position - lastT.forward * distance;
+
+        var point = Instantiate(
+            PointPrefab,
+            at,
+            lastT.rotation,
+            transform
+        );
+
+        var joint = point.GetComponent<Joint>();
+        if (joint != null)
         {
-            segment.spring.connectedBody = ropeSegments[ropeSegments.Count - 1].body;
+            joint.connectedBody = ropePointBodies[ropePointBodies.Count - 1];
         }
-        else
-        {
-            segment.spring.connectedBody = head;
-        }
-        ropeSegments.Add(segment);
-        return segment;
+
+        ropePointTransforms.Add(point.transform);
+        ropePointBodies.Add(point.GetComponent<Rigidbody>());
     }
 
-    /// <summary>
-    /// Sets given RigidBody as rope head
-    /// </summary>
-    /// <param name="body">RigidBody to attach this rope to</param>
-    public void AttachToHead(Rigidbody body)
+    public void PullHead(Vector3 force)
     {
-        head = body;
-        if (ropeSegments.Count > 0)
-        {
-            ropeSegments[0].spring.connectedBody = head;
-        }
+        ropePointBodies[0].AddForce(force, ForceMode.Impulse);
     }
 
-    /// <summary>
-    /// Attaches an external SpringJoint to last segment of the rope
-    /// </summary>
-    public void AttachCargo(Transform to, Rigidbody body, FixedJoint joint)
+    public void AttachCargo()
     {
-        cargo = new Segment();
-        cargo.transform = to;
-        cargo.body = body;
-        cargo.spring = null;
-
-        joint.connectedBody = ropeSegments[ropeSegments.Count - 1].body;
-    }
-
-    public void Shrink()
-    {
-        // TODO
+        CargoJoint.connectedBody = ropePointBodies[ropePointBodies.Count - 1];
     }
 }
 

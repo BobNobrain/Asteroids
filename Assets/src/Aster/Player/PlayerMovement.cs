@@ -47,7 +47,7 @@ public class PlayerMovement: MonoBehaviour
     {
         if (CurrentWeapon != null)
         {
-            CurrentWeapon.Init(gameObject, BulletsRoot);
+            // CurrentWeapon.Init(gameObject, BulletsRoot);
         }
     }
 
@@ -60,10 +60,10 @@ public class PlayerMovement: MonoBehaviour
             return;
         }
 
-        if (Input.GetButton("Fire1") && CurrentWeapon != null)
-        {
-            CurrentWeapon.PrimaryTrigger();
-        }
+        // if (Input.GetButton("Fire1") && CurrentWeapon != null)
+        // {
+        //     CurrentWeapon.PrimaryTrigger();
+        // }
 
         dMouseX = Input.GetAxisRaw("Mouse X");
         dMouseY = Input.GetAxisRaw("Mouse Y");
