@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0598837e1cd2c15419cb100090638bdd, type: 3}
+  m_Name: Small O2 Tank
+  m_EditorClassIdentifier: 
+  itemName: Small O2 Tank
+  itemDescription: Refills a small amount of oxygen
+  mass: 1
+  displayIcon: {fileID: 2800000, guid: 775006b553f7b8e439f8c9c867078609, type: 3}
+  itemPrefab: {fileID: 1514846920851658, guid: c4bade83a56063d449f89febde44bef0, type: 2}
+  oxygenRefillAmount: 0.1
