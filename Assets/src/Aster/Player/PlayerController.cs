@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 using Aster.Tools.Weapons;
+using Aster.UI;
+using Aster.Objects;
 
 namespace Aster.Player {
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(PlayerStats))]
-public class PlayerMovement: MonoBehaviour
+public class PlayerController: MonoBehaviour
 {
+    #region Camera Props
     [Range(1e-2f, 1f)]
     public float CamSpeed = .1f;
 
@@ -16,8 +19,11 @@ public class PlayerMovement: MonoBehaviour
     [Range(1e-3f, 1f)]
     public float CamCircleSpeed = .025f;
 
-    public float Eps = 1e-3f;
+    [Range(0.5f, 10f)]
+    public float maxGatherDistance = 2f;
+    #endregion
 
+    #region Movement Props
     public float MaxMovementSpeed = 5f;
     public float MovementAccel = .5f;
     public float StrafeAccel = .4f;
@@ -25,11 +31,15 @@ public class PlayerMovement: MonoBehaviour
 
     [Range(0, 5f)]
     public float AccelStaminaConsumption = .5f;
+    #endregion
 
+    #region Inputs
     private float dMouseX, dMouseY, dMouseZ;
     private float dMoveForward, dMoveRightward;
     private bool accelerate;
+    #endregion
 
+    #region References
     private Rigidbody body;
     private PlayerStats stats;
 
@@ -37,10 +47,19 @@ public class PlayerMovement: MonoBehaviour
     public RopeGun CurrentWeapon;
     public GameObject BulletsRoot;
 
+    public Transform raycaster;
+    public UIManager playerUI;
+    #endregion
+
+    private float Eps = 1e-3f;
+    private RaycastHit hit;
+    private int gatherableItemsMask;
+
     void Awake()
     {
         body = GetComponent<Rigidbody>();
         stats = GetComponent<PlayerStats>();
+        gatherableItemsMask = LayerMask.NameToLayer("Gatherables");
     }
 
     void Start()
@@ -75,6 +94,34 @@ public class PlayerMovement: MonoBehaviour
 
         // acceleration is on when shift is pressed & we have stamina
         accelerate = Input.GetButton("Shift") && stats.Stamina.Acquire(Time.deltaTime * AccelStaminaConsumption);
+
+        // interactions
+        bool hasSomethingToInteract = false;
+        if (Physics.Raycast(raycaster.position, raycaster.forward, out hit, maxGatherDistance, 1 << gatherableItemsMask))
+        {
+            var g = hit.transform.GetComponent<GatherableObject>();
+            if (g != null && g.gatherableItem != null)
+            {
+                hasSomethingToInteract = true;
+                playerUI.crosshair.topHint.SetHint(g.gatherableItem.type.name);
+                playerUI.crosshair.bottomHint.SetHint("Press (R) to pick");
+            }
+        }
+
+        if (hasSomethingToInteract)
+        {
+            playerUI.crosshair.SetType(CrosshairType.INTERACTIVE);
+            if (Input.GetButton("Interaction"))
+            {
+                Debug.Log("Interact");
+            }
+        }
+        else
+        {
+            playerUI.crosshair.SetType(CrosshairType.DEFAULT);
+            playerUI.crosshair.topHint.SetHint("");
+            playerUI.crosshair.bottomHint.SetHint("");
+        }
     }
 
     void FixedUpdate()

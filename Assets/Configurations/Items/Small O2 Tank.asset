@@ -14,6 +14,6 @@ MonoBehaviour:
   itemName: Small O2 Tank
   itemDescription: Refills a small amount of oxygen
   mass: 1
-  displayIcon: {fileID: 2800000, guid: 775006b553f7b8e439f8c9c867078609, type: 3}
+  displayIcon: {fileID: 21300000, guid: 775006b553f7b8e439f8c9c867078609, type: 3}
   itemPrefab: {fileID: 1514846920851658, guid: c4bade83a56063d449f89febde44bef0, type: 2}
   oxygenRefillAmount: 0.1
