@@ -14,6 +14,24 @@ public class Inventory
         Mass = 0;
     }
 
+    public int Count
+    {
+        get { return content.Count; }
+    }
+
+    public InventoryItem this[int i]
+    {
+        get { return content[i]; }
+        set
+        {
+            if (content[i] != value)
+            {
+                content[i] = value;
+                if (ContentChanged != null) { ContentChanged.Invoke(this); }
+            }
+        }
+    }
+
     #region Mass
     private float getActualMass()
     {

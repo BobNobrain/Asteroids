@@ -471,8 +471,8 @@ MonoBehaviour:
   m_Viewport: {fileID: 602446266}
   m_HorizontalScrollbar: {fileID: 1010744449}
   m_VerticalScrollbar: {fileID: 319700705}
-  m_HorizontalScrollbarVisibility: 1
-  m_VerticalScrollbarVisibility: 2
+  m_HorizontalScrollbarVisibility: 0
+  m_VerticalScrollbarVisibility: 1
   m_HorizontalScrollbarSpacing: -3
   m_VerticalScrollbarSpacing: -3
   m_OnValueChanged:
@@ -547,7 +547,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Large Oxygen Tank (Reusable)
+  m_Text: Current Item Name
 --- !u!222 &372046376
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -592,9 +592,9 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -17, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &602446267
 MonoBehaviour:
@@ -782,8 +782,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Refills a lot of oxygen. Can be recharged at oxygen reservoirs and used
-    again.
+  m_Text: Current Item Description
 --- !u!222 &661063927
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1059,12 +1058,12 @@ Prefab:
     - target: {fileID: 224770150550237964, guid: fcb9f9dca9d720948961a627f95cc292,
         type: 2}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 224770150550237964, guid: fcb9f9dca9d720948961a627f95cc292,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 224770150550237964, guid: fcb9f9dca9d720948961a627f95cc292,
         type: 2}
@@ -1074,7 +1073,7 @@ Prefab:
     - target: {fileID: 224770150550237964, guid: fcb9f9dca9d720948961a627f95cc292,
         type: 2}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224770150550237964, guid: fcb9f9dca9d720948961a627f95cc292,
         type: 2}
@@ -1084,7 +1083,7 @@ Prefab:
     - target: {fileID: 224770150550237964, guid: fcb9f9dca9d720948961a627f95cc292,
         type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224770150550237964, guid: fcb9f9dca9d720948961a627f95cc292,
         type: 2}
@@ -1099,11 +1098,15 @@ Prefab:
     - target: {fileID: 224773655711479074, guid: fcb9f9dca9d720948961a627f95cc292,
         type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.726
       objectReference: {fileID: 0}
     - target: {fileID: 224773655711479074, guid: fcb9f9dca9d720948961a627f95cc292,
         type: 2}
       propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1002365723112722, guid: fcb9f9dca9d720948961a627f95cc292, type: 2}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1259,7 +1262,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1010744448
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1275,9 +1278,9 @@ RectTransform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 20}
+  m_SizeDelta: {x: -17, y: 20}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1010744449
 MonoBehaviour:
@@ -1497,11 +1500,14 @@ MonoBehaviour:
     contentParent: {fileID: 1587844578}
     contentPanel: {fileID: 1547730396}
     infoPanel: {fileID: 2089047706}
+    elements: []
     selectionName: {fileID: 372046375}
     selectionDescription: {fileID: 661063926}
     massLabel: {fileID: 230302}
     itemElementPrefab: {fileID: 1002365723112722, guid: fcb9f9dca9d720948961a627f95cc292,
       type: 2}
+    emptyPlank: {fileID: 1500456108}
+    itemsScrollView: {fileID: 366278237}
 --- !u!4 &1109144514
 Transform:
   m_ObjectHideFlags: 0
@@ -1699,6 +1705,80 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: -20}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1500456108
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1500456109}
+  - component: {fileID: 1500456111}
+  - component: {fileID: 1500456110}
+  m_Layer: 5
+  m_Name: EmptyPlank
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &1500456109
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1500456108}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1547730397}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: -30}
+  m_SizeDelta: {x: 0, y: 40}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!114 &1500456110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1500456108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: 95acc82ed20d04944a75bea8423603ee, type: 3}
+    m_FontSize: 20
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 2
+    m_MaxSize: 40
+    m_Alignment: 1
+    m_AlignByGeometry: 0
+    m_RichText: 0
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: Your inventory is empty
+--- !u!222 &1500456111
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1500456108}
 --- !u!1 &1547730396
 GameObject:
   m_ObjectHideFlags: 0
@@ -1727,6 +1807,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 366278238}
+  - {fileID: 1500456109}
   m_Father: {fileID: 683449825}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2444,7 +2525,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}

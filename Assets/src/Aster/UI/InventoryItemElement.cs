@@ -15,8 +15,8 @@ public class InventoryItemElement: MonoBehaviour
 
     public void UpdateWithItem()
     {
-        elementText.enabled = false;
-        elementProgressBar.enabled = false;
+        elementText.gameObject.SetActive(false);
+        elementProgressBar.gameObject.SetActive(false);
         elementImage.sprite = item.type.displayIcon;
     }
 }

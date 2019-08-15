@@ -49,6 +49,8 @@ public class PlayerController: MonoBehaviour
         interactor = new PlayerInteractor(interactionSettings, this);
 
         actor = new PlayerActor(this);
+        actor.Inventory.ContentChanged += playerUI.inventory.OnInventoryChanged;
+        playerUI.inventory.OnInventoryChanged(actor.Inventory);
 
         zeroGMover.Awake();
         gravitationalMover.Awake();
@@ -62,6 +64,11 @@ public class PlayerController: MonoBehaviour
             Debug.Log("Quit");
             Application.Quit();
             return;
+        }
+
+        if (Input.GetButtonUp("Inventory"))
+        {
+            playerUI.inventory.ToggleVisibility();
         }
 
         activeMover.Update();

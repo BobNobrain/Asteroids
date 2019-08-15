@@ -7,7 +7,7 @@ namespace Aster.UI
 
 public class UISubManager
 {
-    public UIManager ui;
+    [HideInInspector] public UIManager ui;
 
     public virtual void Init(UIManager manager)
     {
