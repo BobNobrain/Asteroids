@@ -1158,6 +1158,21 @@ Prefab:
       propertyPath: raycaster
       value: 
       objectReference: {fileID: 1977066791}
+    - target: {fileID: 114886200754470376, guid: 03e44295d875e42489d07524c2cbd759,
+        type: 2}
+      propertyPath: interactionSettings.maxGatherDistance
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114058088886073166, guid: 03e44295d875e42489d07524c2cbd759,
+        type: 2}
+      propertyPath: Stamina.v
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114886200754470376, guid: 03e44295d875e42489d07524c2cbd759,
+        type: 2}
+      propertyPath: zeroGMoveSettings.AccelStaminaConsumption
+      value: 0.75
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 03e44295d875e42489d07524c2cbd759, type: 2}
   m_IsPrefabParent: 0
@@ -2218,25 +2233,6 @@ RectTransform:
   m_PrefabParentObject: {fileID: 224350366555975094, guid: 356c77ca3c02b5248836c9e34e1f897d,
     type: 2}
   m_PrefabInternal: {fileID: 1796440552}
---- !u!1 &1942724377 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1304053006482480, guid: 03e44295d875e42489d07524c2cbd759,
-    type: 2}
-  m_PrefabInternal: {fileID: 875858347}
---- !u!114 &1942724382
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1942724377}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9102e185130acfb41b436884dd5eefb6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  crosshairLabel: {fileID: 1256176163}
-  raycaster: {fileID: 1977066791}
-  maxGatherDistance: 2
 --- !u!1 &1943086021
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using Aster.Player.Inventory;
+using Aster.Actors.Inventory;
 
 public class InventoryTest : MonoBehaviour
 {

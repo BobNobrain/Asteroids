@@ -1,6 +1,6 @@
 ﻿using Aster.Actors.Effects;
 
-namespace Aster.Player.Inventory
+namespace Aster.Actors.Inventory
 {
 
 [System.Serializable]

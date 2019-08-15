@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using Aster.Player.Inventory;
+using Aster.Actors.Inventory;
 
 namespace Aster.UI
 {

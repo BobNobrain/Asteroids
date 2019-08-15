@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Aster.Player.Inventory
+namespace Aster.Actors.Inventory
 {
 
 public class Inventory

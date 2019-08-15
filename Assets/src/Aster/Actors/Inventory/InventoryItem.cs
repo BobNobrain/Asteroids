@@ -2,7 +2,7 @@
 using Aster.Actors.Effects;
 using Aster.Objects;
 
-namespace Aster.Player.Inventory
+namespace Aster.Actors.Inventory
 {
 
 [System.Serializable]

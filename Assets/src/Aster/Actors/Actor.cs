@@ -1,8 +1,9 @@
 ﻿namespace Aster.Actors
 {
 
-public class Actor
+public abstract class Actor
 {
+    public Inventory.Inventory Inventory { get; protected set; }
 }
 
 }

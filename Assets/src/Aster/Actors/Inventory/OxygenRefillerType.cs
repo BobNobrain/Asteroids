@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Aster.Player.Inventory
+namespace Aster.Actors.Inventory
 {
 
 [CreateAssetMenu(menuName = "Aster/Oxygen Refiller")]
