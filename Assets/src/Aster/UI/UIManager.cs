@@ -24,9 +24,6 @@ public class UIManager: MonoBehaviour
     {
         crosshair.Init(this);
         inventory.Init(this);
-
-        crosshair.SetType(CrosshairType.DEFAULT);
-        inventory.SetVisibility(false);
     }
 }
 

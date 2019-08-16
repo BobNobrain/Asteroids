@@ -1,15 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using Aster.Utils;
 
 namespace Aster.Player
 {
 
-public class GravitationalMover: PlayerControllerPart
+public class GravitationalMover: PlayerMover
 {
     Settings settings;
 
-    public GravitationalMover(Settings settings, PlayerController controller): base(controller)
+    public GravitationalMover(
+        Settings settings,
+        PlayerController controller,
+        FocusableInput input
+    ): base(controller, input)
     {
         this.settings = settings;
     }

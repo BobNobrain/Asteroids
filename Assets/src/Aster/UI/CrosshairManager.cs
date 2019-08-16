@@ -17,6 +17,7 @@ public class CrosshairManager: UISubManager
         base.Init(m);
         topHint.Init(m);
         bottomHint.Init(m);
+        SetType(CrosshairType.DEFAULT);
     }
 
     public void SetType(CrosshairType t)

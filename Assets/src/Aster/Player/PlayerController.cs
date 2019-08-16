@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Aster.Tools.Weapons;
 using Aster.UI;
+using Aster.Utils;
 
 namespace Aster.Player {
 
@@ -20,12 +21,14 @@ public class PlayerController: MonoBehaviour
     public UIManager playerUI;
 
     public PlayerActor actor;
+
+    private FocusableInput input;
     #endregion
 
     #region Subcontrollers
     private ZeroGMover zeroGMover;
     private GravitationalMover gravitationalMover;
-    private PlayerControllerPart activeMover;
+    private PlayerMover activeMover;
 
     private PlayerInteractor interactor;
     #endregion
@@ -42,8 +45,10 @@ public class PlayerController: MonoBehaviour
         body = GetComponent<Rigidbody>();
         stats = GetComponent<PlayerStats>();
 
-        zeroGMover = new ZeroGMover(zeroGMoveSettings, this);
-        gravitationalMover = new GravitationalMover(gravitationalMoveSettings, this);
+        input = FocusableInput.Create();
+
+        zeroGMover = new ZeroGMover(zeroGMoveSettings, this, input);
+        gravitationalMover = new GravitationalMover(gravitationalMoveSettings, this, input);
         activeMover = zeroGMover;
 
         interactor = new PlayerInteractor(interactionSettings, this);
@@ -59,16 +64,16 @@ public class PlayerController: MonoBehaviour
 
     void Update()
     {
-        if (Input.GetButton("Cancel"))
+        if (input.GetButton("Cancel"))
         {
             Debug.Log("Quit");
             Application.Quit();
             return;
         }
 
-        if (Input.GetButtonUp("Inventory"))
+        if (input.GetButtonUp("Inventory"))
         {
-            playerUI.inventory.ToggleVisibility();
+            playerUI.inventory.SetVisibility(true, input);
         }
 
         activeMover.Update();

@@ -1,11 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using Aster.Utils;
 
 namespace Aster.Player
 {
 
-public class ZeroGMover: PlayerControllerPart
+public class ZeroGMover: PlayerMover
 {
     private Settings settings;
     private static readonly float Eps = 1e-3f;
@@ -16,25 +15,36 @@ public class ZeroGMover: PlayerControllerPart
     private bool accelerate;
     #endregion
 
-    public ZeroGMover(Settings settings, PlayerController player): base(player)
+    public ZeroGMover(Settings settings, PlayerController player, FocusableInput input): base(player, input)
     {
         this.settings = settings;
     }
 
     public override void Update()
     {
-        dMouseX = Input.GetAxisRaw("Mouse X");
-        dMouseY = Input.GetAxisRaw("Mouse Y");
+        dMouseX = input.GetAxisRaw("Mouse X");
+        dMouseY = input.GetAxisRaw("Mouse Y");
 
-        dMouseZ = Input.GetAxis("Look Rotation");
+        dMouseZ = input.GetAxis("Look Rotation");
 
-        dMoveForward = Input.GetAxisRaw("Vertical");
-        dMoveRightward = Input.GetAxisRaw("Horizontal");
+        dMoveForward = input.GetAxisRaw("Vertical");
+        dMoveRightward = input.GetAxisRaw("Horizontal");
 
         // acceleration is on when shift is pressed & we have stamina
-        accelerate = Input.GetButton("Shift") && player.stats.Stamina.Acquire(
+        accelerate = input.GetButton("Shift") && player.stats.Stamina.Acquire(
             Time.deltaTime * settings.AccelStaminaConsumption
         );
+    }
+
+    public override void Clear()
+    {
+        dMouseX = 0f;
+        dMouseY = 0f;
+        dMouseZ = 0f;
+
+        dMoveForward = 0f;
+        dMoveRightward = 0f;
+        accelerate = false;
     }
 
     public override void FixedUpdate()

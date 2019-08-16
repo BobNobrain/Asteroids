@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Aster.Actors.Inventory;
+using Aster.Utils;
 
 namespace Aster.UI
 {
@@ -27,10 +28,28 @@ public class InventoryUIManager: UISubManager
     private int selectionIndex = 0;
     private Inventory model;
 
-    public void SetVisibility(bool visible)
+    private FocusableInput input = new FocusableInput();
+
+    public override void Init(UIManager manager)
+    {
+        base.Init(manager);
+        contentPanel.SetActive(false);
+        infoPanel.SetActive(false);
+    }
+
+    public void SetVisibility(bool visible, FocusableInput callerInput)
     {
         contentPanel.SetActive(visible);
         infoPanel.SetActive(visible);
+
+        if (visible)
+        {
+            callerInput.TransferFocus(this.input);
+        }
+        else
+        {
+            this.input.TransferFocus(callerInput);
+        }
     }
 
     public void OnInventoryChanged(Inventory inv)
@@ -76,9 +95,9 @@ public class InventoryUIManager: UISubManager
         }
     }
 
-    public void ToggleVisibility()
+    public void ToggleVisibility(FocusableInput input)
     {
-        SetVisibility(!contentPanel.activeSelf);
+        SetVisibility(!contentPanel.activeSelf, input);
     }
 }
 
