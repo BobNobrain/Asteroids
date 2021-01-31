@@ -73,7 +73,7 @@ public class PlayerController: MonoBehaviour
 
         if (input.GetButtonUp("Inventory"))
         {
-            playerUI.inventory.SetVisibility(true, input);
+            playerUI.inventory.ToggleVisibility(input);
         }
 
         activeMover.Update();

@@ -20,21 +20,21 @@ public class ZeroGMover: PlayerMover
         this.settings = settings;
     }
 
-    public override void Update()
-    {
-        dMouseX = input.GetAxisRaw("Mouse X");
-        dMouseY = input.GetAxisRaw("Mouse Y");
+    // public override void Update()
+    // {
+    //     dMouseX = input.GetAxis("Mouse X");
+    //     dMouseY = input.GetAxis("Mouse Y");
 
-        dMouseZ = input.GetAxis("Look Rotation");
+    //     dMouseZ = input.GetAxis("Look Rotation");
 
-        dMoveForward = input.GetAxisRaw("Vertical");
-        dMoveRightward = input.GetAxisRaw("Horizontal");
+    //     dMoveForward = input.GetAxisRaw("Vertical");
+    //     dMoveRightward = input.GetAxisRaw("Horizontal");
 
-        // acceleration is on when shift is pressed & we have stamina
-        accelerate = input.GetButton("Shift") && player.stats.Stamina.Acquire(
-            Time.deltaTime * settings.AccelStaminaConsumption
-        );
-    }
+    //     // acceleration is on when shift is pressed & we have stamina
+    //     accelerate = input.GetButton("Shift") && player.stats.Stamina.Acquire(
+    //         Time.deltaTime * settings.AccelStaminaConsumption
+    //     );
+    // }
 
     public override void Clear()
     {
@@ -49,8 +49,22 @@ public class ZeroGMover: PlayerMover
 
     public override void FixedUpdate()
     {
+        dMouseX = input.GetAxis("Mouse X");
+        dMouseY = input.GetAxis("Mouse Y");
+
+        dMouseZ = input.GetAxis("Look Rotation");
+
+        dMoveForward = input.GetAxisRaw("Vertical");
+        dMoveRightward = input.GetAxisRaw("Horizontal");
+
+        // acceleration is on when shift is pressed & we have stamina
+        accelerate = input.GetButton("Shift") && player.stats.Stamina.Acquire(
+            Time.deltaTime * settings.AccelStaminaConsumption
+        );
+
         UpdateCameraLook();
         UpdateMovement();
+        // Clear();
     }
 
     private void UpdateCameraLook()

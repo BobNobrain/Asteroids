@@ -74,9 +74,8 @@ public class InventoryUIManager: UISubManager
                     // spawn a new element
                     var obj = GameObject.Instantiate(
                         itemElementPrefab,
-                        Vector3.zero,
-                        Quaternion.identity,
-                        contentParent
+                        contentParent,
+                        false
                     );
                     elements.Add(obj.GetComponent<InventoryItemElement>());
                 }
